@@ -3,12 +3,14 @@ package ch.epfl.ivrl.photopicker;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +22,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import ch.epfl.ivrl.photopicker.dateSelect.DateChangedListener;
 import ch.epfl.ivrl.photopicker.dateSelect.DatePickerFragment;
+import ch.epfl.ivrl.photopicker.imageFilter.ImageDateFilter;
+import ch.epfl.ivrl.photopicker.permissionManagement.PermissionGranter;
 
 public class MainActivity extends AppCompatActivity
     implements DateChangedListener {
@@ -43,9 +47,10 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 //        .setAction("Action", null).show();
-                Intent slidePhotoIntent = new Intent();
-                slidePhotoIntent.setClass(view.getContext(), SlidePhoto.class);
-                startActivity(slidePhotoIntent);
+                getImageList(view.getContext());
+                //Intent slidePhotoIntent = new Intent();
+                //slidePhotoIntent.setClass(view.getContext(), SlidePhoto.class);
+                //startActivity(slidePhotoIntent);
             }
         });
 
@@ -53,6 +58,7 @@ public class MainActivity extends AppCompatActivity
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        PermissionGranter.askForPermission(this);
     }
 
     @Override
@@ -142,11 +148,18 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void changeTheButton(boolean isStartDate, String newText) {
         Button datePicker;
-        if (isStartDate)
-            datePicker = (Button)findViewById(R.id.start_date_button);
-        else
-            datePicker = (Button)findViewById(R.id.end_date_button);
+        if (isStartDate) {
+            datePicker = (Button) findViewById(R.id.start_date_button);
+        } else {
+            datePicker = (Button) findViewById(R.id.end_date_button);
+        }
 
         datePicker.setText(newText);
+    }
+
+    private void getImageList(Context context) {
+        for (String s : ImageDateFilter.getCameraImages(this)) {
+            Log.d("FILE",s);
+        }
     }
 }
