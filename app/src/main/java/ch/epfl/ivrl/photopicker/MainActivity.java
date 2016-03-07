@@ -1,5 +1,6 @@
 package ch.epfl.ivrl.photopicker;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -19,6 +20,9 @@ import android.widget.Button;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import ch.epfl.ivrl.photopicker.dateSelect.DateChangedListener;
 import ch.epfl.ivrl.photopicker.dateSelect.DatePickerFragment;
@@ -41,6 +45,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,11 +53,12 @@ public class MainActivity extends AppCompatActivity
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 //        .setAction("Action", null).show();
                 getImageList(view.getContext());
-                //Intent slidePhotoIntent = new Intent();
-                //slidePhotoIntent.setClass(view.getContext(), SlidePhoto.class);
-                //startActivity(slidePhotoIntent);
+                Intent slidePhotoIntent = new Intent();
+                slidePhotoIntent.putExtra("uri-list", ImageDateFilter.getCameraImages());
+                slidePhotoIntent.setClass(view.getContext(), SlidePhoto.class);
+                startActivity(slidePhotoIntent);
             }
-        });
+        });*/
 
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -158,8 +164,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void getImageList(Context context) {
+        Log.d("FILE", "Size = " + ImageDateFilter.getCameraImages(this).size());
         for (String s : ImageDateFilter.getCameraImages(this)) {
             Log.d("FILE",s);
         }
+    }
+
+    public void goToPhotoSelection(View v) {
+        Intent slidePhotoIntent = new Intent();
+        ArrayList<String> images = ImageDateFilter.getCameraImages(this);
+        slidePhotoIntent.putExtra("uri-list", images);
+        slidePhotoIntent.setClass(this.getBaseContext(), SlidePhoto.class);
+        startActivity(slidePhotoIntent);
     }
 }

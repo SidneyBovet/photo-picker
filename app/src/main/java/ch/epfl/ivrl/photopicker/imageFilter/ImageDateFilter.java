@@ -38,7 +38,7 @@ public class ImageDateFilter {
         return String.valueOf(path.toLowerCase().hashCode());
     }
 
-    public static List<String> getCameraImages(Activity thisActivity) {
+    public static ArrayList<String> getCameraImages(Activity thisActivity) {
         ArrayList<String> result = null;
 
         if (PermissionGranter.checkForPermission((thisActivity))) {

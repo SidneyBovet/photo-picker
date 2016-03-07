@@ -1,5 +1,6 @@
 package ch.epfl.ivrl.photopicker;
 
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -12,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class SlidePhoto extends AppCompatActivity {
 
@@ -41,6 +45,15 @@ public class SlidePhoto extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // 1. get passed intent
+        Intent intent = getIntent();
+        // 2. get person object from intent
+        ArrayList<String> uriList = (ArrayList<String>) intent.getSerializableExtra("uri-list");
+        for (String s : uriList) {
+            Log.d("PASSED", s);
+        }
+
         setContentView(R.layout.activity_slide_photo);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
