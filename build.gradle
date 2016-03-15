@@ -21,3 +21,24 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+// Grant necessary permissions to avoid test failure because of ui sync.
+task grantPermissions(type: Exec, dependsOn: 'installDebugAndroidTest') {
+    def permissions = ['INTERNET',
+                       'GET_ACCOUNTS',
+                       'WAKE_LOCK',
+                       'VIBRATE',
+                       'READ_CONTACTS',
+                       'RECORD_AUDIO',
+                       'CAMERA',
+                       'WRITE_EXTERNAL_STORAGE',
+                       'READ_EXTERNAL_STORAGE']
+    permissions.each {
+        commandLine "\$ANDROID_HOME/platform-tools/adb shell pm grant com.singlewire.cirrus android.permission.${it}".split(' ')
+    }}
+
+tasks.whenTaskAdded { task ->
+    if (task.name.startsWith('connectedDebugAndroidTest')) {
+        task.dependsOn grantPermissions
+    }
+}

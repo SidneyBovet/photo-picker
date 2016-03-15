@@ -1,16 +1,14 @@
 package ch.epfl.ivrl.photopicker;
 
-import android.app.Activity;
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -21,8 +19,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 import ch.epfl.ivrl.photopicker.dateSelect.DateChangedListener;
 import ch.epfl.ivrl.photopicker.dateSelect.DatePickerFragment;
@@ -32,11 +29,14 @@ import ch.epfl.ivrl.photopicker.permissionManagement.PermissionGranter;
 public class MainActivity extends AppCompatActivity
     implements DateChangedListener {
 
+    private Date mStartDate;
+    private Date mEndDate;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    private GoogleApiClient client;
+    private GoogleApiClient mClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        mClient = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         PermissionGranter.askForPermission(this);
     }
 
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
+        mClient.connect();
         Action viewAction = Action.newAction(
                 Action.TYPE_VIEW,
                 "Main Page",
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity
                 // TODO: Make sure this auto-generated app deep link URI is correct.
                 Uri.parse("android-app://ch.epfl.ivrl.photopicker/http/host/path")
         );
-        AppIndex.AppIndexApi.start(client, viewAction);
+        AppIndex.AppIndexApi.start(mClient, viewAction);
     }
 
     @Override
@@ -125,8 +125,8 @@ public class MainActivity extends AppCompatActivity
                 // TODO: Make sure this auto-generated app deep link URI is correct.
                 Uri.parse("android-app://ch.epfl.ivrl.photopicker/http/host/path")
         );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
+        AppIndex.AppIndexApi.end(mClient, viewAction);
+        mClient.disconnect();
     }
 
     public void showDatePickerDialog(View v) {
@@ -152,11 +152,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void changeTheButton(boolean isStartDate, String newText) {
+    public void changeTheButton(boolean isStartDate, Date newDate) {
+        String newText = "";
+        final int flags = DateUtils.FORMAT_SHOW_WEEKDAY & DateUtils.FORMAT_SHOW_DATE & DateUtils.FORMAT_SHOW_YEAR & DateUtils.FORMAT_NO_NOON;
+        newText = DateUtils.formatDateTime(getBaseContext(), newDate.getTime(), flags);
+
         Button datePicker;
         if (isStartDate) {
+            mStartDate = newDate;
             datePicker = (Button) findViewById(R.id.start_date_button);
         } else {
+            mEndDate = newDate;
             datePicker = (Button) findViewById(R.id.end_date_button);
         }
 
@@ -172,8 +178,8 @@ public class MainActivity extends AppCompatActivity
 
     public void goToPhotoSelection(View v) {
         Intent slidePhotoIntent = new Intent();
-        ArrayList<String> images = ImageDateFilter.getCameraImages(this);
-        slidePhotoIntent.putExtra("uri-list", images);
+        slidePhotoIntent.putExtra("start-date", mStartDate);
+        slidePhotoIntent.putExtra("end-date", mEndDate);
         slidePhotoIntent.setClass(this.getBaseContext(), SlidePhoto.class);
         startActivity(slidePhotoIntent);
     }

@@ -13,7 +13,7 @@ public class PermissionGranter {
 
     public static void askForPermission(Activity thisActivity) {
         if (ContextCompat.checkSelfPermission(thisActivity,
-                Manifest.permission.READ_CONTACTS)
+                Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(thisActivity,
@@ -24,7 +24,7 @@ public class PermissionGranter {
 
     public static boolean checkForPermission(Activity thisActivity) {
         return ContextCompat.checkSelfPermission(thisActivity,
-                Manifest.permission.READ_CONTACTS)
+                Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED;
     }
 }

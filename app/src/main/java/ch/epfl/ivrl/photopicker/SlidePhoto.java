@@ -1,11 +1,12 @@
 package ch.epfl.ivrl.photopicker;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ContentFrameLayout;
+//import android.support.v7.widget.ContentFrameLayout;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -24,6 +25,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import ch.epfl.ivrl.photopicker.imageFilter.ImageDateFilter;
 
 public class SlidePhoto extends AppCompatActivity {
 
@@ -46,13 +51,13 @@ public class SlidePhoto extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 1. get passed intent
+        // 1. get passed values
         Intent intent = getIntent();
-        // 2. get person object from intent
-        ArrayList<String> uriList = (ArrayList<String>) intent.getSerializableExtra("uri-list");
-        for (String s : uriList) {
-            Log.d("PASSED", s);
-        }
+        Date startDate = (Date) intent.getSerializableExtra("start-date");
+        Date endDate = (Date) intent.getSerializableExtra("end-date");
+
+        //Log.d("S DATE", startDate);
+        //Log.d("E DATE", endDate);
 
         setContentView(R.layout.activity_slide_photo);
 
@@ -78,7 +83,6 @@ public class SlidePhoto extends AppCompatActivity {
         });
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -99,6 +103,17 @@ public class SlidePhoto extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void filterImages() {
+
+    }
+
+    private void getImageList(Context context) {
+        Log.d("FILE", "Size = " + ImageDateFilter.getCameraImages(this).size());
+        for (String s : ImageDateFilter.getCameraImages(this)) {
+            Log.d("FILE",s);
+        }
     }
 
     /**
