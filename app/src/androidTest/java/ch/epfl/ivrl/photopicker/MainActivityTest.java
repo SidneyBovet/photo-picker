@@ -2,6 +2,7 @@ package ch.epfl.ivrl.photopicker;
 
 import android.app.Activity;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.ViewInteraction;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.text.format.DateUtils;
@@ -58,20 +59,11 @@ public class MainActivityTest
 
         //correct date
         Date now = new Date();
-        String correctDate = DateUtils.formatDateTime (mActivity.getBaseContext(), now.getTime(), DateUtils.FORMAT_ABBREV_ALL);
+        int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_MONTH | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY | DateUtils.FORMAT_SHOW_YEAR;
+        String correctDate = DateUtils.formatDateTime (mActivity.getBaseContext(), now.getTime(), flags);
 
         // check button text
         String buttonText = ((Button) mActivity.findViewById(R.id.start_date_button)).getText().toString();
         assertEquals(buttonText, correctDate);
-    }
-
-    @Test
-    public void testChangeTheButton() throws Exception {
-
-    }
-
-    @Test
-    public void testGoToPhotoSelection() throws Exception {
-
     }
 }
