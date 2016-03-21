@@ -1,22 +1,15 @@
 package ch.epfl.ivrl.photopicker.imageFilter;
 
-import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import ch.epfl.ivrl.photopicker.permissionManagement.PermissionGranter;
 
@@ -41,7 +34,9 @@ public class ImageDateFilter {
     public static ArrayList<String> getCameraImages(Activity thisActivity) {
         ArrayList<String> result = null;
 
-        if (PermissionGranter.checkForPermission((thisActivity))) {
+        Log.d("PERMISSION","" + PermissionGranter.hasPermission((thisActivity)));
+
+        if (PermissionGranter.hasPermission((thisActivity))) {
             final String[] projection = {MediaStore.Images.Media.DATA};
             final String selection = MediaStore.Images.Media.BUCKET_ID + " = ?";
             final String[] selectionArgs = {CAMERA_IMAGE_BUCKET_ID};
@@ -63,6 +58,31 @@ public class ImageDateFilter {
             }
             cursor.close();
         }
+        return result;
+    }
+
+    public static List<File> getFilesWithinDates(List<String> files, Calendar start, Calendar end)
+    {
+        if (files == null) {
+            Log.e("File list", "Cannot process null file list");
+            return null;
+        }
+
+        if (start == null || end == null) {
+            Log.e("File list", "Cannot process files with null start or end time");
+            return null;
+        }
+
+        ArrayList<File> result = new ArrayList<>(files.size());
+
+        for (String path: files) {
+            File f = new File(path);
+            long lastModified = f.lastModified();
+            if(lastModified >= start.getTimeInMillis() && lastModified <= end.getTimeInMillis()) {
+                result.add(f);
+            }
+        }
+
         return result;
     }
 }

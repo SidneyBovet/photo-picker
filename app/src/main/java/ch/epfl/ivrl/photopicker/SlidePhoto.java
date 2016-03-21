@@ -2,6 +2,8 @@ package ch.epfl.ivrl.photopicker;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -22,9 +24,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -51,36 +56,28 @@ public class SlidePhoto extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // 1. get passed values
-        Intent intent = getIntent();
-        Date startDate = (Date) intent.getSerializableExtra("start-date");
-        Date endDate = (Date) intent.getSerializableExtra("end-date");
-
-        //Log.d("S DATE", startDate);
-        //Log.d("E DATE", endDate);
-
         setContentView(R.layout.activity_slide_photo);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        List<File> filteredImages = getImagesAccordingToDates();
+        // Create the adapter that will return a fragment for each image
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), filteredImages);
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+    }
 
+    private List<File> getImagesAccordingToDates() {
+        Intent intent = getIntent();
+        Calendar startDate = (Calendar) intent.getSerializableExtra("start-date");
+        Calendar endDate = (Calendar) intent.getSerializableExtra("end-date");
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        List<String> paths = ImageDateFilter.getCameraImages(this);
+        return ImageDateFilter.getFilesWithinDates(paths, startDate, endDate);
     }
 
     @Override
@@ -105,17 +102,6 @@ public class SlidePhoto extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void filterImages() {
-
-    }
-
-    private void getImageList(Context context) {
-        Log.d("FILE", "Size = " + ImageDateFilter.getCameraImages(this).size());
-        for (String s : ImageDateFilter.getCameraImages(this)) {
-            Log.d("FILE",s);
-        }
-    }
-
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -125,6 +111,7 @@ public class SlidePhoto extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private static final String ARG_SECTION_IMAGE = "section_image";
 
         public PlaceholderFragment() {
         }
@@ -133,11 +120,13 @@ public class SlidePhoto extends AppCompatActivity {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
+        public static PlaceholderFragment newInstance(int sectionNumber, String imagePath) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            args.putString(ARG_SECTION_IMAGE, imagePath);
             fragment.setArguments(args);
+
             return fragment;
         }
 
@@ -145,8 +134,22 @@ public class SlidePhoto extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_slide_photo, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            String path = getArguments().getString(ARG_SECTION_IMAGE);
+            if (path != null) {
+                File imgFile = new File(path);
+                if (imgFile.exists()) {
+                    // section title
+                    TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+                    textView.setText(imgFile.getName());
+
+                    // section image
+                    ImageView imageView = (ImageView) rootView.findViewById(R.id.section_image);
+                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                    imageView.setImageBitmap(myBitmap);
+                }
+            }
+
             return rootView;
         }
     }
@@ -157,34 +160,39 @@ public class SlidePhoto extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        List<File> images = null;
+
+        public SectionsPagerAdapter(FragmentManager fm, List<File> filteredImages) {
             super(fm);
+
+            if (filteredImages != null) {
+                images = filteredImages;
+            }
         }
 
         @Override
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return PlaceholderFragment.newInstance(position + 1, images.get(position).getAbsolutePath());
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            if (images != null) {
+                return images.size();
+            } else {
+                return 0;
+            }
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
+            if (images != null) {
+                return images.get(position).getName();
+            } else {
+                return null;
             }
-            return null;
         }
     }
 }

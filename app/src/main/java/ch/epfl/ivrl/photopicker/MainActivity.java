@@ -19,6 +19,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import ch.epfl.ivrl.photopicker.dateSelect.DateChangedListener;
@@ -29,8 +30,8 @@ import ch.epfl.ivrl.photopicker.permissionManagement.PermissionGranter;
 public class MainActivity extends AppCompatActivity
     implements DateChangedListener {
 
-    private Date mStartDate;
-    private Date mEndDate;
+    private Calendar mStartDate;
+    private Calendar mEndDate;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -64,6 +65,8 @@ public class MainActivity extends AppCompatActivity
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         mClient = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
+
         PermissionGranter.askForPermission(this);
     }
 
@@ -152,10 +155,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void changeTheButton(boolean isStartDate, Date newDate) {
+    public void changeTheButton(boolean isStartDate, Calendar newDate) {
         String newText = "";
-        final int flags = DateUtils.FORMAT_SHOW_WEEKDAY & DateUtils.FORMAT_SHOW_DATE & DateUtils.FORMAT_SHOW_YEAR & DateUtils.FORMAT_NO_NOON;
-        newText = DateUtils.formatDateTime(getBaseContext(), newDate.getTime(), flags);
+
+        if (isStartDate) {
+            newDate.set(Calendar.HOUR_OF_DAY, 0);
+        } else {
+            newDate.set(Calendar.HOUR_OF_DAY, 23);
+            newDate.set(Calendar.MINUTE, 59);
+        }
+
+        final int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_WEEKDAY | DateUtils.FORMAT_ABBREV_WEEKDAY | DateUtils.FORMAT_SHOW_YEAR;
+
+        newText = DateUtils.formatDateTime(getBaseContext(), newDate.getTimeInMillis(), flags);
 
         Button datePicker;
         if (isStartDate) {
@@ -167,13 +179,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         datePicker.setText(newText);
-    }
-
-    private void getImageList(Context context) {
-        Log.d("FILE", "Size = " + ImageDateFilter.getCameraImages(this).size());
-        for (String s : ImageDateFilter.getCameraImages(this)) {
-            Log.d("FILE",s);
-        }
     }
 
     public void goToPhotoSelection(View v) {

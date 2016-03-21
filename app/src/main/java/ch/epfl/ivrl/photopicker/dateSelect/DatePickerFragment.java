@@ -10,6 +10,7 @@ import android.widget.DatePicker;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * Created by Sidney on 07.03.2016.
@@ -48,10 +49,7 @@ public class DatePickerFragment extends DialogFragment
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        Date returned = new Date();
-        returned.setYear(year);
-        returned.setMonth(monthOfYear);
-        returned.setDate(dayOfMonth);
+        Calendar returned = new GregorianCalendar(year,monthOfYear,dayOfMonth);
 
         dcl.changeTheButton(isStartDate, returned);
     }
