@@ -34,8 +34,6 @@ public class ImageDateFilter {
     public static ArrayList<String> getCameraImages(Activity thisActivity) {
         ArrayList<String> result = null;
 
-        Log.d("PERMISSION","" + PermissionGranter.hasPermission((thisActivity)));
-
         if (PermissionGranter.hasPermission((thisActivity))) {
             final String[] projection = {MediaStore.Images.Media.DATA};
             final String selection = MediaStore.Images.Media.BUCKET_ID + " = ?";

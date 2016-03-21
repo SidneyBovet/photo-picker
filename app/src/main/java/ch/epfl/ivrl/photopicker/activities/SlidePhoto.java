@@ -1,4 +1,4 @@
-package ch.epfl.ivrl.photopicker;
+package ch.epfl.ivrl.photopicker.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,6 +22,10 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
+import boofcv.android.ConvertBitmap;
+import boofcv.struct.image.ImageFloat32;
+import boofcv.struct.image.MultiSpectral;
+import ch.epfl.ivrl.photopicker.R;
 import ch.epfl.ivrl.photopicker.imageFilter.ImageDateFilter;
 
 //import android.support.v7.widget.ContentFrameLayout;
@@ -126,21 +130,33 @@ public class SlidePhoto extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_slide_photo, container, false);
 
+            int sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
             String path = getArguments().getString(ARG_SECTION_IMAGE);
+
             if (path != null) {
                 File imgFile = new File(path);
                 if (imgFile.exists()) {
                     // section title
                     TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+
                     textView.setText(imgFile.getName());
+                    if (sectionNumber % 2 == 0) {
+                        textView.setText(imgFile.getName() + " by BoofCV");
+                    }
 
                     // section image
                     ImageView imageView = (ImageView) rootView.findViewById(R.id.section_image);
                     Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+                    if (sectionNumber % 2 == 0) {
+                        MultiSpectral<ImageFloat32> color = ConvertBitmap.bitmapToMS(myBitmap, null, ImageFloat32.class, null);
+                        ConvertBitmap.multiToBitmap(color, myBitmap, null);
+                    }
+
                     imageView.setImageBitmap(myBitmap);
                 }
-            }
 
+            }
             return rootView;
         }
     }

@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import ch.epfl.ivrl.photopicker.activities.SlidePhoto;
+
 /**
  * Created by Sidney on 15.03.2016.
  */

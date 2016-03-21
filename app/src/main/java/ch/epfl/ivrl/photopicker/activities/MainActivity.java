@@ -1,4 +1,4 @@
-package ch.epfl.ivrl.photopicker;
+package ch.epfl.ivrl.photopicker.activities;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -19,6 +19,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.Calendar;
 
+import ch.epfl.ivrl.photopicker.R;
 import ch.epfl.ivrl.photopicker.dateSelect.DateChangedListener;
 import ch.epfl.ivrl.photopicker.dateSelect.DatePickerFragment;
 import ch.epfl.ivrl.photopicker.permissionManagement.PermissionGranter;

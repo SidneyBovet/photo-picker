@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 
 import java.util.Date;
 
+import ch.epfl.ivrl.photopicker.activities.MainActivity;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
