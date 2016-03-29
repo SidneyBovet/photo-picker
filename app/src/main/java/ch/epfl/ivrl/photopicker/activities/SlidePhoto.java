@@ -1,8 +1,10 @@
 package ch.epfl.ivrl.photopicker.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,11 +12,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +32,7 @@ import boofcv.struct.image.ImageFloat32;
 import boofcv.struct.image.MultiSpectral;
 import ch.epfl.ivrl.photopicker.R;
 import ch.epfl.ivrl.photopicker.imageFilter.ImageDateFilter;
+import ch.epfl.ivrl.photopicker.imageFilter.ImageUtils;
 
 //import android.support.v7.widget.ContentFrameLayout;
 
@@ -146,11 +152,24 @@ public class SlidePhoto extends AppCompatActivity {
 
                     // section image
                     ImageView imageView = (ImageView) rootView.findViewById(R.id.section_image);
-                    Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+                    WindowManager wm = (WindowManager) inflater.getContext().getSystemService(Context.WINDOW_SERVICE);
+                    Display display = wm.getDefaultDisplay();
+                    Point size = new Point();
+                    display.getSize(size);
+                    int width = size.x;
+                    int height = size.y;
+
+                    Log.d("MEMORY", "Max width " + width);
+                    Log.d("MEMORY", "Max height " + height);
+                    Bitmap myBitmap = ImageUtils.decodeSampledBitmapFromFile(
+                            imgFile.getAbsolutePath(),
+                            width,
+                            height);
 
                     if (sectionNumber % 2 == 0) {
-                        MultiSpectral<ImageFloat32> color = ConvertBitmap.bitmapToMS(myBitmap, null, ImageFloat32.class, null);
-                        ConvertBitmap.multiToBitmap(color, myBitmap, null);
+                        //MultiSpectral<ImageFloat32> color = ConvertBitmap.bitmapToMS(myBitmap, null, ImageFloat32.class, null);
+                        //ConvertBitmap.multiToBitmap(color, myBitmap, null);
                     }
 
                     imageView.setImageBitmap(myBitmap);
