@@ -3,6 +3,8 @@ package ch.epfl.ivrl.photopicker.imageData;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import java.io.File;
+
 import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
 
 /**
@@ -10,16 +12,20 @@ import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
  */
 public class Photograph {
 
-    private String mAbsolutePath;
+    private File mFile;
     private int mScalingFactor = -1;
 
     public Photograph (String absolutePath, int targetWidth, int targetHeight) {
-        mAbsolutePath = absolutePath;
+        this(absolutePath, "no name", targetWidth, targetHeight);
+    }
+
+    public Photograph (String absolutePath, String name, int targetWidth, int targetHeight) {
+        mFile = new File(absolutePath);
         mScalingFactor = ImageUtils.getOptionsFromPath(absolutePath, targetWidth, targetHeight).inSampleSize;
     }
 
     public String getPath() {
-        return mAbsolutePath;
+        return mFile.getAbsolutePath();
     }
 
     public int getScalingFactor() {
@@ -30,13 +36,31 @@ public class Photograph {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = mScalingFactor;
         options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(mAbsolutePath, options);
+        return BitmapFactory.decodeFile(mFile.getAbsolutePath(), options);
     }
 
     public Bitmap getScaledBitmap(int specificScaling) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = specificScaling;
         options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(mAbsolutePath, options);
+        return BitmapFactory.decodeFile(mFile.getAbsolutePath(), options);
+    }
+
+    public String getName() {
+        return mFile.getName();
+    }
+
+    public boolean equals(Photograph other) {
+        if(!other.getPath().equals(this.getPath()))
+            return false;
+
+        if(other.getScalingFactor() != mScalingFactor)
+            return false;
+
+        return true;
+    }
+
+    public String toString() {
+        return "Photo: '" + mFile.getName() + "' : s=" + mScalingFactor;
     }
 }

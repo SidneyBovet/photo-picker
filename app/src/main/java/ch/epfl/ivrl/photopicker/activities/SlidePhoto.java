@@ -2,7 +2,6 @@ package ch.epfl.ivrl.photopicker.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,7 +10,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,12 +24,10 @@ import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
-import boofcv.android.ConvertBitmap;
-import boofcv.struct.image.ImageFloat32;
-import boofcv.struct.image.MultiSpectral;
 import ch.epfl.ivrl.photopicker.R;
+import ch.epfl.ivrl.photopicker.imageData.Photograph;
+import ch.epfl.ivrl.photopicker.imageMisc.ImageAsyncDisplay;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageDateFilter;
-import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
 
 //import android.support.v7.widget.ContentFrameLayout;
 
@@ -62,7 +58,14 @@ public class SlidePhoto extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        List<File> filteredImages = getImagesAccordingToDates();
+        List<Photograph> filteredImages = getImagesAccordingToDates();
+
+        // use async task to get the vacation here
+        // modify the sectionAdapter to use a vacation instead of a list of files
+        // DEBUG ALL THE OUTPUTS
+        fsdjakl;fjdskal;fdsa
+
+
         // Create the adapter that will return a fragment for each image
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), filteredImages);
 
@@ -71,7 +74,7 @@ public class SlidePhoto extends AppCompatActivity {
         mViewPager.setAdapter(mSectionsPagerAdapter);
     }
 
-    private List<File> getImagesAccordingToDates() {
+    private List<Photograph> getImagesAccordingToDates() {
         Intent intent = getIntent();
         Calendar startDate = (Calendar) intent.getSerializableExtra("start-date");
         Calendar endDate = (Calendar) intent.getSerializableExtra("end-date");
@@ -150,7 +153,6 @@ public class SlidePhoto extends AppCompatActivity {
                     }
 
                     // section image
-                    ImageView imageView = (ImageView) rootView.findViewById(R.id.section_image);
 
                     WindowManager wm = (WindowManager) inflater.getContext().getSystemService(Context.WINDOW_SERVICE);
                     Display display = wm.getDefaultDisplay();
@@ -159,20 +161,15 @@ public class SlidePhoto extends AppCompatActivity {
                     int width = size.x;
                     int height = size.y;
 
-                    Log.d("MEMORY", "Max width " + width);
-                    Log.d("MEMORY", "Max height " + height);
-                    Bitmap myBitmap = ImageUtils.decodeSampledBitmapFromFile(
-                            imgFile.getAbsolutePath(),
-                            width,
-                            height);
+                    ImageView imageView = (ImageView) rootView.findViewById(R.id.section_image);
+                    ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(getContext(), imageView);
+                    imageAsyncDisplay.execute(path, "" + width, "" + height);
 
                     if (sectionNumber % 2 == 0) {
                         //MultiSpectral<ImageFloat32> color = ConvertBitmap.bitmapToMS(myBitmap, null, ImageFloat32.class, null);
                         //ConvertBitmap.multiToBitmap(color, myBitmap, null);
                     }
 
-                    imageView.setImageBitmap(myBitmap);
-                    imageView.setElevation(1000f);
                 }
 
             }
@@ -186,9 +183,9 @@ public class SlidePhoto extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        List<File> images = null;
+        List<Photograph> images = null;
 
-        public SectionsPagerAdapter(FragmentManager fm, List<File> filteredImages) {
+        public SectionsPagerAdapter(FragmentManager fm, List<Photograph> filteredImages) {
             super(fm);
 
             if (filteredImages != null) {
@@ -200,7 +197,7 @@ public class SlidePhoto extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1, images.get(position).getAbsolutePath());
+            return PlaceholderFragment.newInstance(position + 1, images.get(position).getPath());
         }
 
         @Override

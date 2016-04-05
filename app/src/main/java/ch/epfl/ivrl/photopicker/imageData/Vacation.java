@@ -3,8 +3,6 @@ package ch.epfl.ivrl.photopicker.imageData;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.epfl.ivrl.photopicker.imageGrouping.ImageDistanceMetric;
-
 /**
  * Created by Sidney on 30.03.2016.
  *
@@ -19,5 +17,16 @@ public class Vacation {
 
     public void addScene(Scene scene) {
         mScenes.add(scene);
+    }
+
+    public String toString() {
+        String ret = "=== Vacation ===";
+
+        for (Scene s: mScenes) {
+            ret += s.toString();
+        }
+
+        ret += "== ======== ===";
+        return ret;
     }
 }

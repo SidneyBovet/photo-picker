@@ -2,25 +2,18 @@ package ch.epfl.ivrl.photopicker.imageMisc;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 /**
  * Created by Sidney on 29.03.2016.
  */
 public class ImageUtils {
 
-    public static Bitmap decodeSampledBitmapFromFile(String path, int reqWidth, int reqHeight) {
+    public static Bitmap decodeSampledBitmapFromPath(String path, int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = getOptionsFromPath(path, reqWidth, reqHeight);
 
-
-        Bitmap bm = BitmapFactory.decodeFile(path, options);
-
-        Log.d("MEMORY", "Decoded width " + options.outWidth);
-        Log.d("MEMORY", "Decoded height " + options.outHeight);
-
-        return bm;
+        return BitmapFactory.decodeFile(path, options);
     }
 
     public static BitmapFactory.Options getOptionsFromPath(String path, int reqWidth, int reqHeight) {
@@ -43,9 +36,6 @@ public class ImageUtils {
         // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;
-
-        Log.d("MEMORY", "Raw width " + width);
-        Log.d("MEMORY", "Raw height " + height);
 
         int inSampleSize = 1;
 

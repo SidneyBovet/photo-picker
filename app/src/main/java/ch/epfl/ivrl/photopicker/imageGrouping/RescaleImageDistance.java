@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import boofcv.android.ConvertBitmap;
-import boofcv.struct.image.ImageFloat32;
 import boofcv.struct.image.ImageUInt8;
 
 import boofcv.struct.image.MultiSpectral;
@@ -50,7 +49,7 @@ public class RescaleImageDistance implements ImageDistanceMetric {
         MultiSpectral<ImageUInt8> img;
 
         // import with approx. dimension
-        Bitmap bm = ImageUtils.decodeSampledBitmapFromFile(path, width, height);
+        Bitmap bm = ImageUtils.decodeSampledBitmapFromPath(path, width, height);
         // resize to exactly the required resolution
         bm = Bitmap.createScaledBitmap(bm, width, height, true);
         // reallocate buffer if size is too small

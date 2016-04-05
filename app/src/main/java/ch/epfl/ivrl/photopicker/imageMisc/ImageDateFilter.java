@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import ch.epfl.ivrl.photopicker.imageData.Photograph;
 import ch.epfl.ivrl.photopicker.permissionManagement.PermissionGranter;
 
 /**
@@ -59,7 +60,7 @@ public class ImageDateFilter {
         return result;
     }
 
-    public static List<File> getFilesWithinDates(List<String> files, Calendar start, Calendar end)
+    public static List<Photograph> getFilesWithinDates(List<String> files, Calendar start, Calendar end)
     {
         if (files == null) {
             Log.e("File list", "Cannot process null file list");
@@ -71,13 +72,14 @@ public class ImageDateFilter {
             return null;
         }
 
-        ArrayList<File> result = new ArrayList<>(files.size());
+        ArrayList<Photograph> result = new ArrayList<>(files.size());
 
         for (String path: files) {
             File f = new File(path);
             long lastModified = f.lastModified();
             if(lastModified >= start.getTimeInMillis() && lastModified <= end.getTimeInMillis()) {
-                result.add(f);
+                Photograph newPhoto = new Photograph(f.getAbsolutePath(), f.getName(),-1,-1);
+                result.add(newPhoto);
             }
         }
 

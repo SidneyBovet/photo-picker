@@ -20,4 +20,15 @@ public class Scene {
     public void addPhoto(Photograph photo) {
         mPhotographs.add(photo);
     }
+
+    public String toString() {
+        String ret = "Scene:\n";
+
+        for (Photograph p: mPhotographs) {
+            ret += "\t" + p.toString();
+            ret += "\n";
+        }
+
+        return ret.substring(0, ret.lastIndexOf('\n'));
+    }
 }
