@@ -1,4 +1,4 @@
-package ch.epfl.ivrl.photopicker.imageFilter;
+package ch.epfl.ivrl.photopicker.imageMisc;
 
 import android.app.Activity;
 import android.database.Cursor;

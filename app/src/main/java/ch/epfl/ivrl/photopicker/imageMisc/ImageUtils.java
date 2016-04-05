@@ -1,4 +1,4 @@
-package ch.epfl.ivrl.photopicker.imageFilter;
+package ch.epfl.ivrl.photopicker.imageMisc;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +12,19 @@ public class ImageUtils {
     public static Bitmap decodeSampledBitmapFromFile(String path, int reqWidth, int reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = getOptionsFromPath(path, reqWidth, reqHeight);
+
+
+        Bitmap bm = BitmapFactory.decodeFile(path, options);
+
+        Log.d("MEMORY", "Decoded width " + options.outWidth);
+        Log.d("MEMORY", "Decoded height " + options.outHeight);
+
+        return bm;
+    }
+
+    public static BitmapFactory.Options getOptionsFromPath(String path, int reqWidth, int reqHeight) {
+        // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(path, options);
@@ -22,13 +35,7 @@ public class ImageUtils {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
 
-
-        Bitmap bm = BitmapFactory.decodeFile(path, options);
-
-        Log.d("MEMORY", "Decoded width " + options.outWidth);
-        Log.d("MEMORY", "Decoded height " + options.outHeight);
-
-        return bm;
+        return options;
     }
 
     public static int calculateInSampleSize(

@@ -3,7 +3,6 @@ package ch.epfl.ivrl.photopicker.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -31,8 +30,8 @@ import boofcv.android.ConvertBitmap;
 import boofcv.struct.image.ImageFloat32;
 import boofcv.struct.image.MultiSpectral;
 import ch.epfl.ivrl.photopicker.R;
-import ch.epfl.ivrl.photopicker.imageFilter.ImageDateFilter;
-import ch.epfl.ivrl.photopicker.imageFilter.ImageUtils;
+import ch.epfl.ivrl.photopicker.imageMisc.ImageDateFilter;
+import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
 
 //import android.support.v7.widget.ContentFrameLayout;
 
@@ -173,6 +172,7 @@ public class SlidePhoto extends AppCompatActivity {
                     }
 
                     imageView.setImageBitmap(myBitmap);
+                    imageView.setElevation(1000f);
                 }
 
             }
