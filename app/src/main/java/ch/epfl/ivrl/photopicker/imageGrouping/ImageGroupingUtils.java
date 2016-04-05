@@ -25,7 +25,8 @@ public class ImageGroupingUtils {
                         photos.get(j)
                 ));
 
-                int progress = 2*j + (1-i)*(2*photos.size() - i) / (photos.size() * (photos.size()-1));
+                // don't ask how or why, it just works (maybe)
+                int progress = 100 * 2*j + (1-i)*(2*photos.size() - i) / (photos.size() * (photos.size()-1));
 
                 callback.makeProgress(progress);
             }
