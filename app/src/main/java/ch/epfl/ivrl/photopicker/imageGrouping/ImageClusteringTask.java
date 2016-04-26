@@ -24,6 +24,9 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
     public ImageClusteringTask(Context ctx,
             ImageDistanceMetric distanceMetric,
             ImageClusteringTechnique clusteringTechnique) {
+
+        Log.d("Context check",ctx.toString());
+
         mProgressDialog = new ProgressDialog(ctx);
         mDistanceMetric = distanceMetric;
         mClusteringTechnique = clusteringTechnique;
@@ -44,11 +47,9 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
         if (filteredPhotos.length != 1)
             throw new IllegalArgumentException("I must be given exactly one list of photos.");
 
-        DenseMatrix32F pairwiseDistances = ImageGroupingUtils.getDistanceMatrix(filteredPhotos[1], mDistanceMetric, this);
+        DenseMatrix32F pairwiseDistances = ImageGroupingUtils.getDistanceMatrix(filteredPhotos[0], mDistanceMetric, this);
 
-        Log.d("AsyncTask DoInBg", pairwiseDistances.toString());
-
-        Vacation collection = mClusteringTechnique.clusterPhotographs(filteredPhotos[1], pairwiseDistances);
+        Vacation collection = mClusteringTechnique.clusterPhotographs(filteredPhotos[0], pairwiseDistances);
 
         return collection;
     }

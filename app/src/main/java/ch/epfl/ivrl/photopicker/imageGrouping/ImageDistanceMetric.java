@@ -1,7 +1,5 @@
 package ch.epfl.ivrl.photopicker.imageGrouping;
 
-import java.io.File;
-
 import ch.epfl.ivrl.photopicker.imageData.Photograph;
 
 /**
@@ -14,5 +12,5 @@ public interface ImageDistanceMetric {
      * @param imageTwo The second image to be compared
      * @return The distance between image one and image two according to a specific algorithm.
      */
-    public float computeDistance(Photograph imageOne, Photograph imageTwo);
+    float computeDistance(Photograph imageOne, Photograph imageTwo);
 }

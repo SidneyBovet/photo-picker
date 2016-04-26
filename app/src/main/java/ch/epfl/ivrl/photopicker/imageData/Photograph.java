@@ -16,16 +16,20 @@ public class Photograph {
     private int mScalingFactor = -1;
 
     public Photograph (String absolutePath, int targetWidth, int targetHeight) {
-        this(absolutePath, "no name", targetWidth, targetHeight);
+        this(new File(absolutePath), targetWidth, targetHeight);
     }
 
-    public Photograph (String absolutePath, String name, int targetWidth, int targetHeight) {
-        mFile = new File(absolutePath);
-        mScalingFactor = ImageUtils.getOptionsFromPath(absolutePath, targetWidth, targetHeight).inSampleSize;
+    public Photograph (File file, int targetWidth, int targetHeight) {
+        mFile = file;
+        mScalingFactor = ImageUtils.getOptionsFromPath(file.getAbsolutePath(), targetWidth, targetHeight).inSampleSize;
     }
 
     public String getPath() {
         return mFile.getAbsolutePath();
+    }
+
+    public File getFile() {
+        return mFile;
     }
 
     public int getScalingFactor() {

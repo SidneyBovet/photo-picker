@@ -1,10 +1,14 @@
 package ch.epfl.ivrl.photopicker.imageMisc;
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,7 +64,7 @@ public class ImageDateFilter {
         return result;
     }
 
-    public static List<Photograph> getFilesWithinDates(List<String> files, Calendar start, Calendar end)
+    public static List<Photograph> getFilesWithinDates(Context context, List<String> files, Calendar start, Calendar end)
     {
         if (files == null) {
             Log.e("File list", "Cannot process null file list");
@@ -72,13 +76,22 @@ public class ImageDateFilter {
             return null;
         }
 
-        ArrayList<Photograph> result = new ArrayList<>(files.size());
 
+        // get target H and W for bitmap resizing
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int targetWidth = size.x;
+        int targetHeight = size.y;
+
+        // construct the array of Photographs
+        ArrayList<Photograph> result = new ArrayList<>(files.size());
         for (String path: files) {
             File f = new File(path);
             long lastModified = f.lastModified();
             if(lastModified >= start.getTimeInMillis() && lastModified <= end.getTimeInMillis()) {
-                Photograph newPhoto = new Photograph(f.getAbsolutePath(), f.getName(),-1,-1);
+                Photograph newPhoto = new Photograph(f, targetWidth, targetHeight);
                 result.add(newPhoto);
             }
         }
