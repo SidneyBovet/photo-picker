@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void changeTheButton(boolean isStartDate, Calendar newDate) {
-        String newText = "";
+        String newText;
 
         if (isStartDate) {
             newDate.set(Calendar.HOUR_OF_DAY, 0);

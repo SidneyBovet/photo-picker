@@ -26,6 +26,9 @@ import java.util.List;
 
 import ch.epfl.ivrl.photopicker.R;
 import ch.epfl.ivrl.photopicker.imageData.Photograph;
+import ch.epfl.ivrl.photopicker.imageGrouping.ImageClusteringTask;
+import ch.epfl.ivrl.photopicker.imageGrouping.ThresholdClustering;
+import ch.epfl.ivrl.photopicker.imageGrouping.TimeDistance;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageAsyncDisplay;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageDateFilter;
 
@@ -61,9 +64,14 @@ public class SlidePhoto extends AppCompatActivity {
         List<Photograph> filteredImages = getImagesAccordingToDates();
 
         // use async task to get the vacation here
+        ImageClusteringTask ict = new ImageClusteringTask(
+                SlidePhoto.this,
+                new TimeDistance(),
+                new ThresholdClustering());
+        ict.execute(filteredImages);
         // modify the sectionAdapter to use a vacation instead of a list of files
         // DEBUG ALL THE OUTPUTS
-        fsdjakl;fjdskal;fdsa
+        //fsdjakl;fjdskal;fdsa;
 
 
         // Create the adapter that will return a fragment for each image
@@ -75,12 +83,26 @@ public class SlidePhoto extends AppCompatActivity {
     }
 
     private List<Photograph> getImagesAccordingToDates() {
+
+        // retrieve start and end dates
         Intent intent = getIntent();
         Calendar startDate = (Calendar) intent.getSerializableExtra("start-date");
         Calendar endDate = (Calendar) intent.getSerializableExtra("end-date");
 
+        // adjust dates to toady if needed
+        if(startDate == null) {
+            startDate = Calendar.getInstance();
+            startDate.set(Calendar.HOUR_OF_DAY, 0);
+        }
+        if(endDate == null) {
+            endDate = Calendar.getInstance();
+            endDate.set(Calendar.HOUR_OF_DAY, 23);
+            endDate.set(Calendar.MINUTE, 59);
+        }
+
+        // get all pictures from the camera and filter them
         List<String> paths = ImageDateFilter.getCameraImages(this);
-        return ImageDateFilter.getFilesWithinDates(paths, startDate, endDate);
+        return ImageDateFilter.getFilesWithinDates(SlidePhoto.this, paths, startDate, endDate);
     }
 
     @Override
@@ -188,9 +210,7 @@ public class SlidePhoto extends AppCompatActivity {
         public SectionsPagerAdapter(FragmentManager fm, List<Photograph> filteredImages) {
             super(fm);
 
-            if (filteredImages != null) {
-                images = filteredImages;
-            }
+            images = filteredImages;
         }
 
         @Override
