@@ -92,6 +92,7 @@ public class SlidePhoto extends AppCompatActivity {
         // adjust dates to toady if needed
         if(startDate == null) {
             startDate = Calendar.getInstance();
+            startDate.set(Calendar.YEAR, 0);
             startDate.set(Calendar.HOUR_OF_DAY, 0);
         }
         if(endDate == null) {
