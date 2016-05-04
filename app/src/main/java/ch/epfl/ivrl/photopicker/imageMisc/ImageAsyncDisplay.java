@@ -37,11 +37,11 @@ public class ImageAsyncDisplay extends AsyncTask<String, Void, Bitmap> {
     @Override
     protected Bitmap doInBackground(String... params) {
         if (params.length < 3)
-            throw new IllegalArgumentException("Must be called with at least 3 arguments.");
+            throw new IllegalArgumentException("Must be called with 3 arguments: path, height, width");
 
         mPath = params[0];
-        int width = Integer.parseInt(params[1]);
-        int height = Integer.parseInt(params[2]);
+        int height = Integer.parseInt(params[1]);
+        int width = Integer.parseInt(params[2]);
 
         return ImageUtils.decodeSampledBitmapFromPath(mPath, width, height);
     }
