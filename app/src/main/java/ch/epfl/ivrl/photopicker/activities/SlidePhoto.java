@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,15 +63,34 @@ public class SlidePhoto extends AppCompatActivity {
                 new ThresholdClustering());
         ict.execute(filteredImages);
 
-        // Set up the ViewPager with the sections adapter.
+        // Set up the tinder view for this activity
         mTinderView = (TinderView) findViewById(R.id.container);
 
-        ImageView imageView = new ImageView(SlidePhoto.this);
-        mTinderView.addView(imageView);
+        // Add a few images
+        TinderView.LayoutParams lp = new TinderView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.gravity = Gravity.FILL_VERTICAL | Gravity.CENTER_VERTICAL;
 
-        ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(SlidePhoto.this, imageView);
+        ImageView iv1 = new ImageView(SlidePhoto.this);
+        lp.position = TinderView.LayoutParams.POSITION_LEFT;
+        mTinderView.addView(iv1,lp);
+
+        ImageView iv2 = new ImageView(SlidePhoto.this);
+        lp.position = TinderView.LayoutParams.POSITION_MIDDLE;
+        mTinderView.addView(iv2,lp);
+
+        ImageView iv3 = new ImageView(SlidePhoto.this);
+        lp.position = TinderView.LayoutParams.POSITION_RIGHT;
+        mTinderView.addView(iv3,lp);
+
+        ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(SlidePhoto.this, iv1);
         Photograph photo = filteredImages.get(0);
-        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight() + "", photo.getTargetWidth() + "");
+        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight()/20 + "", photo.getTargetWidth()/20 + "");
+
+        imageAsyncDisplay = new ImageAsyncDisplay(SlidePhoto.this, iv2);
+        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight()/2 + "", photo.getTargetWidth()/2 + "");
+
+        imageAsyncDisplay = new ImageAsyncDisplay(SlidePhoto.this, iv3);
+        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight()/20 + "", photo.getTargetWidth()/20 + "");
     }
 
     private List<Photograph> getImagesAccordingToDates() {
