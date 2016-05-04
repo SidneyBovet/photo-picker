@@ -14,6 +14,8 @@ public class Photograph {
 
     private File mFile;
     private int mScalingFactor = -1;
+    private int mTargetHeight = -1;
+    private int mTargetWidth = -1;
 
     public Photograph (String absolutePath, int targetWidth, int targetHeight) {
         this(new File(absolutePath), targetWidth, targetHeight);
@@ -21,6 +23,9 @@ public class Photograph {
 
     public Photograph (File file, int targetWidth, int targetHeight) {
         mFile = file;
+        mTargetHeight = targetHeight;
+        mTargetWidth = targetWidth;
+
         mScalingFactor = ImageUtils.getOptionsFromPath(file.getAbsolutePath(), targetWidth, targetHeight).inSampleSize;
     }
 
@@ -32,8 +37,20 @@ public class Photograph {
         return mFile;
     }
 
+    public String getName() {
+        return mFile.getName();
+    }
+
     public int getScalingFactor() {
         return mScalingFactor;
+    }
+
+    public int getTargetHeight() {
+        return mTargetHeight;
+    }
+
+    public int getTargetWidth() {
+        return mTargetWidth;
     }
 
     public Bitmap getScaledBitmap() {
@@ -50,9 +67,6 @@ public class Photograph {
         return BitmapFactory.decodeFile(mFile.getAbsolutePath(), options);
     }
 
-    public String getName() {
-        return mFile.getName();
-    }
 
     public boolean equals(Photograph other) {
         if(!other.getPath().equals(this.getPath()))
