@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,25 +32,16 @@ import ch.epfl.ivrl.photopicker.imageGrouping.ThresholdClustering;
 import ch.epfl.ivrl.photopicker.imageGrouping.TimeDistance;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageAsyncDisplay;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageDateFilter;
+import ch.epfl.ivrl.photopicker.view.TinderView;
 
 //import android.support.v7.widget.ContentFrameLayout;
 
 public class SlidePhoto extends AppCompatActivity {
 
     /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     * The {@link TinderView} that will host the section contents.
      */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
+    private TinderView mTinderView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,17 +61,16 @@ public class SlidePhoto extends AppCompatActivity {
                 new TimeDistance(),
                 new ThresholdClustering());
         ict.execute(filteredImages);
-        // modify the sectionAdapter to use a vacation instead of a list of files
-        // DEBUG ALL THE OUTPUTS
-        //fsdjakl;fjdskal;fdsa;
-
-
-        // Create the adapter that will return a fragment for each image
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), filteredImages);
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mTinderView = (TinderView) findViewById(R.id.container);
+
+        ImageView imageView = new ImageView(SlidePhoto.this);
+        mTinderView.addView(imageView);
+
+        ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(SlidePhoto.this, imageView);
+        Photograph photo = filteredImages.get(0);
+        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight() + "", photo.getTargetWidth() + "");
     }
 
     private List<Photograph> getImagesAccordingToDates() {
@@ -126,117 +117,5 @@ public class SlidePhoto extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-        private static final String ARG_SECTION_IMAGE = "section_image";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber, String imagePath) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            args.putString(ARG_SECTION_IMAGE, imagePath);
-            fragment.setArguments(args);
-
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_slide_photo, container, false);
-
-            int sectionNumber = getArguments().getInt(ARG_SECTION_NUMBER);
-            String path = getArguments().getString(ARG_SECTION_IMAGE);
-
-            if (path != null) {
-                File imgFile = new File(path);
-                if (imgFile.exists()) {
-                    // section title
-                    TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-
-                    textView.setText(imgFile.getName());
-                    if (sectionNumber % 2 == 0) {
-                        textView.setText(imgFile.getName() + " by BoofCV");
-                    }
-
-                    // section image
-
-                    WindowManager wm = (WindowManager) inflater.getContext().getSystemService(Context.WINDOW_SERVICE);
-                    Display display = wm.getDefaultDisplay();
-                    Point size = new Point();
-                    display.getSize(size);
-                    int width = size.x;
-                    int height = size.y;
-
-                    ImageView imageView = (ImageView) rootView.findViewById(R.id.section_image);
-                    ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(getContext(), imageView);
-                    imageAsyncDisplay.execute(path, "" + width, "" + height);
-
-                    if (sectionNumber % 2 == 0) {
-                        //MultiSpectral<ImageFloat32> color = ConvertBitmap.bitmapToMS(myBitmap, null, ImageFloat32.class, null);
-                        //ConvertBitmap.multiToBitmap(color, myBitmap, null);
-                    }
-
-                }
-
-            }
-            return rootView;
-        }
-    }
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        List<Photograph> images = null;
-
-        public SectionsPagerAdapter(FragmentManager fm, List<Photograph> filteredImages) {
-            super(fm);
-
-            images = filteredImages;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1, images.get(position).getPath());
-        }
-
-        @Override
-        public int getCount() {
-            if (images != null) {
-                return images.size();
-            } else {
-                return 0;
-            }
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            if (images != null) {
-                return images.get(position).getName();
-            } else {
-                return null;
-            }
-        }
     }
 }
