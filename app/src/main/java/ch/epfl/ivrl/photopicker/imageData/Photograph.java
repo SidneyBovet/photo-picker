@@ -9,6 +9,8 @@ import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
 
 /**
  * Created by Sidney on 30.03.2016.
+ *
+ * Encapsulates all information representing a picture
  */
 public class Photograph {
 
