@@ -1,6 +1,7 @@
 package ch.epfl.ivrl.photopicker.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -17,6 +18,10 @@ import ch.epfl.ivrl.photopicker.R;
  */
 @RemoteViews.RemoteView
 public class TinderView extends ViewGroup {
+
+    /** The position of the separation between kept+discarded and current photos */
+    private int mSeparationPosition = asdf;
+
     /** The amount of space used by children in the left gutter. */
     private int mLeftWidth;
 

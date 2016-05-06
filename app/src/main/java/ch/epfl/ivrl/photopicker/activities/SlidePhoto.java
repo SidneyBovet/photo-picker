@@ -67,30 +67,34 @@ public class SlidePhoto extends AppCompatActivity {
         mTinderView = (TinderView) findViewById(R.id.container);
 
         // Add a few images
-        TinderView.LayoutParams lp = new TinderView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        lp.gravity = Gravity.FILL_VERTICAL | Gravity.CENTER_VERTICAL;
+        TinderView.LayoutParams lp = new TinderView.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.gravity = Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
 
         ImageView iv1 = new ImageView(SlidePhoto.this);
         lp.position = TinderView.LayoutParams.POSITION_LEFT;
-        mTinderView.addView(iv1,lp);
+        mTinderView.addView(iv1, lp);
 
         ImageView iv2 = new ImageView(SlidePhoto.this);
         lp.position = TinderView.LayoutParams.POSITION_MIDDLE;
-        mTinderView.addView(iv2,lp);
+        mTinderView.addView(iv2, lp);
 
         ImageView iv3 = new ImageView(SlidePhoto.this);
         lp.position = TinderView.LayoutParams.POSITION_RIGHT;
-        mTinderView.addView(iv3,lp);
+        mTinderView.addView(iv3, lp);
 
         ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(SlidePhoto.this, iv1);
         Photograph photo = filteredImages.get(0);
-        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight()/20 + "", photo.getTargetWidth()/20 + "");
+        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight() / 20 + "", photo.getTargetWidth() / 20 + "");
 
         imageAsyncDisplay = new ImageAsyncDisplay(SlidePhoto.this, iv2);
-        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight()/2 + "", photo.getTargetWidth()/2 + "");
+        photo = filteredImages.get(1);
+        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight() / 2 + "", photo.getTargetWidth() / 2 + "");
 
         imageAsyncDisplay = new ImageAsyncDisplay(SlidePhoto.this, iv3);
-        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight()/20 + "", photo.getTargetWidth()/20 + "");
+        photo = filteredImages.get(2);
+        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight() / 20 + "", photo.getTargetWidth() / 20 + "");
     }
 
     private List<Photograph> getImagesAccordingToDates() {
@@ -101,12 +105,12 @@ public class SlidePhoto extends AppCompatActivity {
         Calendar endDate = (Calendar) intent.getSerializableExtra("end-date");
 
         // adjust dates to toady if needed
-        if(startDate == null) {
+        if (startDate == null) {
             startDate = Calendar.getInstance();
             startDate.set(Calendar.YEAR, 0);
             startDate.set(Calendar.HOUR_OF_DAY, 0);
         }
-        if(endDate == null) {
+        if (endDate == null) {
             endDate = Calendar.getInstance();
             endDate.set(Calendar.HOUR_OF_DAY, 23);
             endDate.set(Calendar.MINUTE, 59);
