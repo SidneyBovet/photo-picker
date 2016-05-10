@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
+import android.transition.Slide;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +24,7 @@ import ch.epfl.ivrl.photopicker.R;
 import ch.epfl.ivrl.photopicker.dateSelect.DateChangedListener;
 import ch.epfl.ivrl.photopicker.dateSelect.DatePickerFragment;
 import ch.epfl.ivrl.photopicker.permissionManagement.PermissionGranter;
+import ch.epfl.ivrl.photopicker.view.CoverFlow;
 
 public class MainActivity extends AppCompatActivity
     implements DateChangedListener {
@@ -182,7 +184,7 @@ public class MainActivity extends AppCompatActivity
         Intent slidePhotoIntent = new Intent();
         slidePhotoIntent.putExtra("start-date", mStartDate);
         slidePhotoIntent.putExtra("end-date", mEndDate);
-        slidePhotoIntent.setClass(this.getBaseContext(), SlidePhoto.class);
+        slidePhotoIntent.setClass(MainActivity.this, Tinder.class);
         startActivity(slidePhotoIntent);
     }
 }

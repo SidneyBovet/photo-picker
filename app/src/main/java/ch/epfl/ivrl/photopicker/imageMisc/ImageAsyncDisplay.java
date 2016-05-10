@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
+import java.util.Random;
 
 /**
  * Created by Sidney on 05.04.2016.
@@ -54,6 +55,7 @@ public class ImageAsyncDisplay extends AsyncTask<String, Void, Bitmap> {
             final ImageView imageView = mImageViewReference.get();
             if (imageView != null) {
                 imageView.setImageBitmap(bitmap);
+                //imageView.setTranslationZ(new Random().nextInt(200));
             }
         }
     }

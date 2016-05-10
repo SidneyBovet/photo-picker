@@ -5,4 +5,5 @@
     <string name="select_start_date_button">First day</string>
     <string name="select_end_date_button">Last day</string>
     <string name="fragment_photo_description">fragment photo</string>
+    <string name="title_activity_cover_flow">Cover flow title</string>
 </resources>

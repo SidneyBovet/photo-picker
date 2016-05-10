@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,7 @@ import ch.epfl.ivrl.photopicker.R;
 public class TinderView extends ViewGroup {
 
     /** The position of the separation between kept+discarded and current photos */
-    private int mSeparationPosition = asdf;
+    private float mSeparationPosition = 0.5f;
 
     /** The amount of space used by children in the left gutter. */
     private int mLeftWidth;
@@ -130,6 +131,11 @@ public class TinderView extends ViewGroup {
         final int parentTop = getPaddingTop();
         final int parentBottom = bottom - top - getPaddingBottom();
 
+        Log.d("Dimensions","top "+parentTop);
+        Log.d("Dimensions","bot "+parentBottom);
+        Log.d("Dimensions","midLeft "+middleLeft);
+        Log.d("Dimensions","midRight "+middleRight);
+
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
@@ -137,6 +143,9 @@ public class TinderView extends ViewGroup {
 
                 final int width = child.getMeasuredWidth();
                 final int height = child.getMeasuredHeight();
+
+                mTmpContainerRect.top = Math.round(mSeparationPosition * parentBottom) + parentTop;
+                mTmpContainerRect.bottom = parentBottom - lp.bottomMargin;
 
                 // Compute the frame in which we are placing this child.
                 if (lp.position == LayoutParams.POSITION_LEFT) {
@@ -150,9 +159,9 @@ public class TinderView extends ViewGroup {
                 } else {
                     mTmpContainerRect.left = middleLeft + lp.leftMargin;
                     mTmpContainerRect.right = middleRight - lp.rightMargin;
+                    mTmpContainerRect.top = parentTop + lp.topMargin;
+                    mTmpContainerRect.bottom = Math.round(mSeparationPosition * parentBottom);
                 }
-                mTmpContainerRect.top = parentTop + lp.topMargin;
-                mTmpContainerRect.bottom = parentBottom - lp.bottomMargin;
 
                 // Use the child's gravity and size to determine its final
                 // frame within its container.
