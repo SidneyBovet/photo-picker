@@ -111,12 +111,12 @@ public class SlidePhoto extends AppCompatActivity {
 
         ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(SlidePhoto.this, iv1);
         Photograph photo = filteredImages.get(0);
-        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight() / 20 + "", photo.getTargetWidth() / 20 + "");
+        imageAsyncDisplay.execute(photo);
 
 
         imageAsyncDisplay = new ImageAsyncDisplay(SlidePhoto.this, iv3);
         photo = filteredImages.get(2);
-        imageAsyncDisplay.execute(photo.getPath(), photo.getTargetHeight() / 20 + "", photo.getTargetWidth() / 20 + "");
+        imageAsyncDisplay.execute(photo);
     }
 
     private void setElevation(View v) {
