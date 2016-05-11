@@ -25,8 +25,10 @@ import java.util.List;
 
 import ch.epfl.ivrl.photopicker.R;
 import ch.epfl.ivrl.photopicker.imageData.Photograph;
+import ch.epfl.ivrl.photopicker.imageMisc.ImageAsyncDisplay;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageDateFilter;
 import ch.epfl.ivrl.photopicker.view.CoverFlow;
+import ch.epfl.ivrl.photopicker.view.VerticalCarouselView;
 
 public class Tinder extends AppCompatActivity {
 
@@ -35,42 +37,31 @@ public class Tinder extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tinder);
 
-        String[] photos = getPathsFromPhotos(getImagesAccordingToDates());
+        List<Photograph> photos = getImagesAccordingToDates();
 
-        setCoverFlow(photos, (CoverFlow) findViewById(R.id.kept));
-        setCoverFlow(photos, (CoverFlow) findViewById(R.id.discarded));
-        setCoverFlow(photos, (CoverFlow) findViewById(R.id.current));
+        setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.kept));
+        setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.discarded));
+        setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.current));
     }
 
-    private CoverFlow setCoverFlow(String[] paths, CoverFlow coverFlow) {
+    private VerticalCarouselView setCoverFlow(List<Photograph> photos, VerticalCarouselView coverFlow) {
         //coverFlow = new CoverFlow(this);
 
-        coverFlow.setAdapter(new ImageAdapter(Tinder.this, paths));
-
-        ImageAdapter coverImageAdapter =  new ImageAdapter(Tinder.this, paths);
-
-        //coverImageAdapter.createReflectedImages();
-
-        coverFlow.setAdapter(coverImageAdapter);
+        coverFlow.setAdapter(new ImageAdapter(Tinder.this, photos));
 
         coverFlow.setMaxZoom(-120);
-        coverFlow.setSpacing(-25);
-        coverFlow.setSelection(2, true);
-        coverFlow.setAnimationDuration(1000);
+        //coverFlow.setSpacing(-25);
+        coverFlow.setSelection(2);
+        //coverFlow.setAnimationDuration(1000);
 
         return coverFlow;
     }
 
-    private String[] getPathsFromPhotos(List<Photograph> photographs) {
-        String[] ret = new String[photographs.size()];
-
-        for (int i = 0; i < photographs.size(); i++) {
-            ret[i] = photographs.get(i).getPath();
-        }
-
-        return ret;
-    }
-
+    /**
+     * Uses this Activity's intent to retrieve the start- and end-date, and then filters all the
+     * pictures from the camera to get only the ones within the time frame.
+     * @return A list of all the Photographs matching the dates passed to this activity.
+     */
     private List<Photograph> getImagesAccordingToDates() {
 
         // retrieve start and end dates
@@ -101,76 +92,18 @@ public class Tinder extends AppCompatActivity {
 
         private FileInputStream fis;
 
-        private String[] mImagePaths;
+        private List<Photograph> mPhotographs;
 
         private ImageView[] mImages;
 
-        public ImageAdapter(Context c, String[] paths) {
+        public ImageAdapter(Context c, List<Photograph> photos) {
             mContext = c;
-            mImagePaths = paths;
-            mImages = new ImageView[mImagePaths.length];
-        }
-        public boolean createReflectedImages() {
-            //The gap we want between the reflection and the original image
-            final int reflectionGap = 4;
-
-
-            int index = 0;
-            for (String imagePath : mImagePaths) {
-                Bitmap originalImage = BitmapFactory.decodeFile(imagePath);
-                int width = originalImage.getWidth();
-                int height = originalImage.getHeight();
-
-
-                //This will not scale but will flip on the Y axis
-                Matrix matrix = new Matrix();
-                matrix.preScale(1, -1);
-
-                //Create a Bitmap with the flip matrix applied to it.
-                //We only want the bottom half of the image
-                Bitmap reflectionImage = Bitmap.createBitmap(originalImage, 0, height/2, width, height/2, matrix, false);
-
-
-                //Create a new bitmap with same width but taller to fit reflection
-                Bitmap bitmapWithReflection = Bitmap.createBitmap(width
-                        , (height + height/2), Bitmap.Config.ARGB_8888);
-
-                //Create a new Canvas with the bitmap that's big enough for
-                //the image plus gap plus reflection
-                Canvas canvas = new Canvas(bitmapWithReflection);
-                //Draw in the original image
-                canvas.drawBitmap(originalImage, 0, 0, null);
-                //Draw in the gap
-                Paint defaultPaint = new Paint();
-                canvas.drawRect(0, height, width, height + reflectionGap, defaultPaint);
-                //Draw in the reflection
-                canvas.drawBitmap(reflectionImage,0, height + reflectionGap, null);
-
-                //Create a shader that is a linear gradient that covers the reflection
-                Paint paint = new Paint();
-                LinearGradient shader = new LinearGradient(0, originalImage.getHeight(), 0,
-                        bitmapWithReflection.getHeight() + reflectionGap, 0x70ffffff, 0x00ffffff,
-                        Shader.TileMode.CLAMP);
-                //Set the paint to use this shader (linear gradient)
-                paint.setShader(shader);
-                //Set the Transfer mode to be porter duff and destination in
-                paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
-                //Draw a rectangle using the paint with our linear gradient
-                canvas.drawRect(0, height, width,
-                        bitmapWithReflection.getHeight() + reflectionGap, paint);
-
-                ImageView imageView = new ImageView(mContext);
-                imageView.setImageBitmap(bitmapWithReflection);
-                imageView.setLayoutParams(new CoverFlow.LayoutParams(120, 180));
-                imageView.setScaleType(ImageView.ScaleType.MATRIX);
-                mImages[index++] = imageView;
-
-            }
-            return true;
+            mPhotographs = photos;
+            mImages = new ImageView[mPhotographs.size()];
         }
 
         public int getCount() {
-            return mImagePaths.length;
+            return mPhotographs.size();
         }
 
         public Object getItem(int position) {
@@ -183,16 +116,20 @@ public class Tinder extends AppCompatActivity {
 
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            //Use this code if you want to load from resources
-            ImageView i = new ImageView(mContext);
-            i.setImageBitmap(BitmapFactory.decodeFile(mImagePaths[position]));
-            i.setLayoutParams(new CoverFlow.LayoutParams(130, 130));
-            i.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            ImageView imageView = new ImageView(mContext);
 
+            ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(Tinder.this, imageView);
+
+            imageAsyncDisplay.execute(mPhotographs.get(position));
+            imageView.setLayoutParams(new CoverFlow.LayoutParams(130, 130));
+            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+            /*
             //Make sure we set anti-aliasing otherwise we get jaggies
-            BitmapDrawable drawable = (BitmapDrawable) i.getDrawable();
+            BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
             drawable.setAntiAlias(true);
-            return i;
+            */
+            return imageView;
 
             //return mImages[position];
         }
