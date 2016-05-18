@@ -49,16 +49,16 @@ public class Tinder extends AppCompatActivity {
 
         List<Photograph> photos = getImagesAccordingToDates();
 
-        setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.kept));
-        setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.discarded));
-        setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.current));
+        setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.kept), 300);
+        setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.discarded), 300);
+        setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.current), 500);
 
         mProgressDialog.dismiss();
     }
 
-    private VerticalCarouselView setCoverFlow(List<Photograph> photos, VerticalCarouselView coverFlow) {
+    private VerticalCarouselView setCoverFlow(List<Photograph> photos, VerticalCarouselView coverFlow, int height) {
 
-        coverFlow.setAdapter(new ImageAdapter(Tinder.this, photos));
+        coverFlow.setAdapter(new ImageAdapter(Tinder.this, photos, height));
         coverFlow.setMaxZoom(-120);
         //coverFlow.setSpacing(-25);
         coverFlow.setSelection(coverFlow.getCount());
@@ -107,18 +107,15 @@ public class Tinder extends AppCompatActivity {
     }
 
     public class ImageAdapter extends BaseAdapter {
-        int mGalleryItemBackground;
         private Context mContext;
 
-        private FileInputStream fis;
-
         private List<Photograph> mPhotographs;
+        private int mRowHeight;
 
-        private ImageView[] mImages;
-
-        public ImageAdapter(Context c, List<Photograph> photos) {
+        public ImageAdapter(Context c, List<Photograph> photos, int rowHeight) {
             mContext = c;
             mPhotographs = photos;
+            mRowHeight = rowHeight;
         }
 
         public int getCount() {
@@ -163,12 +160,11 @@ public class Tinder extends AppCompatActivity {
 
 
             // set view height
-            final int viewHeight = 500;
             ViewGroup.LayoutParams params = imageView.getLayoutParams();
             if (params == null) {
-                params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, viewHeight);
+                params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mRowHeight);
             } else {
-                params.height = viewHeight;
+                params.height = mRowHeight;
             }
             imageView.setLayoutParams(params);
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
