@@ -111,6 +111,10 @@ public class VerticalCarouselView extends ListView {
         //return (getHeight() - getPaddingTop() - getPaddingBottom()) / 2 + getPaddingTop();
     }
 
+    public void recomputeCenterOfCoverFlow() {
+        mCoverFlowCenter = getCenterOfCoverFlow();
+    }
+
     /**
      * Get the Centre of the View
      * @return The centre of the given view.
