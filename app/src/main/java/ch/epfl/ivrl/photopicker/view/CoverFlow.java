@@ -178,7 +178,7 @@ public class CoverFlow extends Gallery {
             mCamera.translate(0.0f, 0.0f, zoomAmount);
         }
 
-        mCamera.rotateX(rotationAngle);
+        mCamera.rotateY(rotationAngle);
         mCamera.getMatrix(imageMatrix);
         imageMatrix.preTranslate(-(imageWidth/2), -(imageHeight/2));
         imageMatrix.postTranslate((imageWidth/2), (imageHeight/2));

@@ -55,6 +55,14 @@ public class Photograph {
         return mTargetWidth;
     }
 
+    public void setTargetHeight(int newHeight) {
+        mTargetHeight = newHeight;
+    }
+
+    public void setTargetWidth(int newWidth) {
+        mTargetWidth = newWidth;
+    }
+
     public Bitmap getScaledBitmap() {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = mScalingFactor;

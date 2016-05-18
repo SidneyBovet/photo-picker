@@ -21,19 +21,28 @@ public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
     private final WeakReference<ImageView> mImageViewReference;
 
     public ImageAsyncDisplay(Context ctx, ImageView imageView) {
-        mProgressDialog = new ProgressDialog(ctx);
+        this(ctx, imageView, true);
+    }
+
+    public ImageAsyncDisplay(Context ctx, ImageView imageView, boolean displayProgress) {
         // Use a WeakReference to ensure the ImageView can be garbage collected
         mImageViewReference = new WeakReference<ImageView>(imageView);
+        if (displayProgress) {
+            mProgressDialog = new ProgressDialog(ctx);
+        }
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        mProgressDialog.setMessage("Loading photos...");
-        mProgressDialog.setIndeterminate(false);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        mProgressDialog.setCancelable(false);
-        mProgressDialog.show();
+
+        if (mProgressDialog != null) {
+            mProgressDialog.setMessage("Loading photos...");
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+        }
     }
 
     @Override
@@ -49,7 +58,10 @@ public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
     // Once complete, see if ImageView is still around and set bitmap.
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        mProgressDialog.dismiss();
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+        }
+
         if (mImageViewReference != null && bitmap != null) {
             final ImageView imageView = mImageViewReference.get();
             if (imageView != null) {

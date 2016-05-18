@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Transformation;
 import android.widget.ImageView;
@@ -29,6 +30,12 @@ public class VerticalCarouselView extends ListView {
     private Camera mCamera = new Camera();
 
     /**
+     * The offset from the bottom of the "center" of the carousel
+     * 0 means on top, 1 all the way down
+     */
+    private float mBottomOffsetFactor = 0.75f;
+
+    /**
      * The maximum angle the Child ImageView will be rotated by
      */
     private int mMaxRotationAngle = 60;
@@ -45,17 +52,17 @@ public class VerticalCarouselView extends ListView {
 
     public VerticalCarouselView(Context context) {
         super(context);
-        //this.setStaticTransformationsEnabled(true);
+        this.setStaticTransformationsEnabled(true);
     }
 
     public VerticalCarouselView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        //this.setStaticTransformationsEnabled(true);
+        this.setStaticTransformationsEnabled(true);
     }
 
     public VerticalCarouselView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        //this.setStaticTransformationsEnabled(true);
+        this.setStaticTransformationsEnabled(true);
     }
 
     @Override
@@ -100,7 +107,8 @@ public class VerticalCarouselView extends ListView {
      * @return The centre of this CoverFlow.
      */
     private int getCenterOfCoverFlow() {
-        return (getWidth() - getPaddingLeft() - getPaddingRight()) / 2 + getPaddingLeft();
+        return (int)((getHeight() - getPaddingBottom()) * mBottomOffsetFactor);
+        //return (getHeight() - getPaddingTop() - getPaddingBottom()) / 2 + getPaddingTop();
     }
 
     /**
@@ -108,14 +116,16 @@ public class VerticalCarouselView extends ListView {
      * @return The centre of the given view.
      */
     private static int getCenterOfView(View view) {
-        return view.getLeft() + view.getWidth() / 2;
+        return view.getTop() + view.getHeight() / 2;
     }
+
     /**
      * {@inheritDoc}
      *
      * @see #setStaticTransformationsEnabled(boolean)
      */
     protected boolean getChildStaticTransformation(View child, Transformation t) {
+
 
         final int childCenter = getCenterOfView(child);
         final int childWidth = child.getWidth() ;
@@ -131,8 +141,11 @@ public class VerticalCarouselView extends ListView {
             if (Math.abs(rotationAngle) > mMaxRotationAngle) {
                 rotationAngle = (rotationAngle < 0) ? -mMaxRotationAngle : mMaxRotationAngle;
             }
+
             transformImageBitmap((ImageView) child, t, rotationAngle);
         }
+
+        child.invalidate();
 
         return true;
     }
@@ -174,7 +187,7 @@ public class VerticalCarouselView extends ListView {
             mCamera.translate(0.0f, 0.0f, zoomAmount);
         }
 
-        mCamera.rotateX(rotationAngle);
+        mCamera.rotateX(-rotationAngle);
         mCamera.getMatrix(imageMatrix);
         imageMatrix.preTranslate(-(imageWidth/2), -(imageHeight/2));
         imageMatrix.postTranslate((imageWidth/2), (imageHeight/2));

@@ -1,5 +1,6 @@
 package ch.epfl.ivrl.photopicker.activities;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,10 +15,13 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import java.io.FileInputStream;
 import java.util.Calendar;
@@ -28,13 +32,19 @@ import ch.epfl.ivrl.photopicker.imageData.Photograph;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageAsyncDisplay;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageDateFilter;
 import ch.epfl.ivrl.photopicker.view.CoverFlow;
+import ch.epfl.ivrl.photopicker.view.TinderView;
 import ch.epfl.ivrl.photopicker.view.VerticalCarouselView;
 
 public class Tinder extends AppCompatActivity {
 
+    private ProgressDialog mProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mProgressDialog = createAndSetProgressDialog(Tinder.this);
+
         setContentView(R.layout.activity_tinder);
 
         List<Photograph> photos = getImagesAccordingToDates();
@@ -42,21 +52,31 @@ public class Tinder extends AppCompatActivity {
         setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.kept));
         setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.discarded));
         setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.current));
+
+        mProgressDialog.dismiss();
     }
 
     private VerticalCarouselView setCoverFlow(List<Photograph> photos, VerticalCarouselView coverFlow) {
-        //coverFlow = new CoverFlow(this);
 
         coverFlow.setAdapter(new ImageAdapter(Tinder.this, photos));
-
         coverFlow.setMaxZoom(-120);
         //coverFlow.setSpacing(-25);
-        coverFlow.setSelection(2);
+        coverFlow.setSelection(coverFlow.getCount());
         //coverFlow.setAnimationDuration(1000);
 
         return coverFlow;
     }
 
+    private ProgressDialog createAndSetProgressDialog(Context ctx) {
+        ProgressDialog progressDialog = new ProgressDialog(ctx);
+        progressDialog.setMessage("Loading pictures...");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        return progressDialog;
+    }
     /**
      * Uses this Activity's intent to retrieve the start- and end-date, and then filters all the
      * pictures from the camera to get only the ones within the time frame.
@@ -99,7 +119,6 @@ public class Tinder extends AppCompatActivity {
         public ImageAdapter(Context c, List<Photograph> photos) {
             mContext = c;
             mPhotographs = photos;
-            mImages = new ImageView[mPhotographs.size()];
         }
 
         public int getCount() {
@@ -115,14 +134,45 @@ public class Tinder extends AppCompatActivity {
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
+            ImageView imageView;
 
-            ImageView imageView = new ImageView(mContext);
+            // try to reuse given view, create a new one if needed
+            if(convertView != null && convertView.getClass() == ImageView.class) {
+                imageView = (ImageView) convertView;
+            } else {
+                imageView = new ImageView(mContext);
+            }
 
-            ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(Tinder.this, imageView);
+            /*
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(parent.getWidth(), parent.getHeight());
+            layoutParams.gravity=Gravity.CENTER_HORIZONTAL;
+            layoutParams.weight = 1.0f;
+            layoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
+            layoutParams.height = 500000sadf;
+            imageView.setLayoutParams(layoutParams);
+            imageView.requestLayout();
+            */
+
+            // set view photo
+            ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(Tinder.this, imageView, false);
+
+            mPhotographs.get(position).setTargetHeight(parent.getHeight());
+            mPhotographs.get(position).setTargetHeight(parent.getWidth());
 
             imageAsyncDisplay.execute(mPhotographs.get(position));
-            imageView.setLayoutParams(new CoverFlow.LayoutParams(130, 130));
+
+
+            // set view height
+            final int viewHeight = 500;
+            ViewGroup.LayoutParams params = imageView.getLayoutParams();
+            if (params == null) {
+                params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, viewHeight);
+            } else {
+                params.height = viewHeight;
+            }
+            imageView.setLayoutParams(params);
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            //imageView.setLayoutParams(new CoverFlow.LayoutParams(130, 130));
 
             /*
             //Make sure we set anti-aliasing otherwise we get jaggies
