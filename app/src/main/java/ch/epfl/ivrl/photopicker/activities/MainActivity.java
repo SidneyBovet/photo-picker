@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity
 
 
         PermissionGranter.askForPermission(this);
+
+        goToPhotoSelection(null); //TODO: remove this
     }
 
     @Override
