@@ -9,47 +9,47 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ch.epfl.ivrl.photopicker.activities.Tinder">
 
-    <TableLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true">
+        android:weightSum="3">
 
-        <TableRow
+
+        <ch.epfl.ivrl.photopicker.view.VerticalCarouselView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_weight="2"
+            android:divider="@null"
+            android:dividerHeight="-50dp"
+            android:id="@+id/current" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0sp"
+            android:layout_weight="1"
+            android:weightSum="2">
 
             <ch.epfl.ivrl.photopicker.view.VerticalCarouselView
-                android:layout_width="350sp"
-                android:layout_height="350sp"
-                android:gravity="center_horizontal|center_vertical"
-                android:id="@+id/current" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:weightSum="2">
+                android:layout_weight="1"
+                android:gravity="bottom|start"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:id="@+id/discarded" />
 
-                <ch.epfl.ivrl.photopicker.view.VerticalCarouselView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="bottom|left"
-                    android:id="@+id/discarded" />
+            <ch.epfl.ivrl.photopicker.view.VerticalCarouselView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="bottom|end"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:id="@+id/kept" />
+        </LinearLayout>
+    </LinearLayout>
 
-                <ch.epfl.ivrl.photopicker.view.VerticalCarouselView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="bottom|right"
-                    android:id="@+id/kept" />
-            </LinearLayout>
-        </TableRow>
-    </TableLayout>
 </RelativeLayout>
