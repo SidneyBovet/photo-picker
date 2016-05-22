@@ -23,6 +23,7 @@ import java.util.List;
 
 import ch.epfl.ivrl.photopicker.R;
 import ch.epfl.ivrl.photopicker.imageData.Photograph;
+import ch.epfl.ivrl.photopicker.imageData.Vacation;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageAsyncDisplay;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageDateFilter;
 import ch.epfl.ivrl.photopicker.view.OnSwipeListener;
@@ -47,7 +48,8 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
         ((SwipingLinerLayout) findViewById(R.id.tinderContainer)).setSwipeListener(this);
 
         // Get the pictures from the intent
-        List<Photograph> photos = getImagesAccordingToDates();
+        // TODO: make things smarter (and add things after we are done with this scene)
+        List<Photograph> photos = getVacationFromIntent().getScene(0).getPhotographs();
 
         // Set up the three sub views
         mKeptGrid = (GridView) findViewById(R.id.kept);
@@ -82,6 +84,11 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
         }
     }
 
+    private Vacation getVacationFromIntent() {
+        Intent intent = getIntent();
+        return (Vacation) intent.getSerializableExtra("vacation");
+    }
+
     private void setGridView(GridView view) {
         view.setAdapter(new ImageAdapter(Tinder.this, null, -1));
     }
@@ -104,34 +111,6 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
         progressDialog.show();
 
         return progressDialog;
-    }
-    /**
-     * Uses this Activity's intent to retrieve the start- and end-date, and then filters all the
-     * pictures from the camera to get only the ones within the time frame.
-     * @return A list of all the Photographs matching the dates passed to this activity.
-     */
-    private List<Photograph> getImagesAccordingToDates() {
-
-        // retrieve start and end dates
-        Intent intent = getIntent();
-        Calendar startDate = (Calendar) intent.getSerializableExtra("start-date");
-        Calendar endDate = (Calendar) intent.getSerializableExtra("end-date");
-
-        // adjust dates to toady if needed
-        if (startDate == null) {
-            startDate = Calendar.getInstance();
-            startDate.set(Calendar.YEAR, 0);
-            startDate.set(Calendar.HOUR_OF_DAY, 0);
-        }
-        if (endDate == null) {
-            endDate = Calendar.getInstance();
-            endDate.set(Calendar.HOUR_OF_DAY, 23);
-            endDate.set(Calendar.MINUTE, 59);
-        }
-
-        // get all pictures from the camera and filter them
-        List<String> paths = ImageDateFilter.getCameraImages(this);
-        return ImageDateFilter.getFilesWithinDates(Tinder.this, paths, startDate, endDate);
     }
 
     public class ImageAdapter extends BaseAdapter {

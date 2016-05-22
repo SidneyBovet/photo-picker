@@ -19,10 +19,19 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.Calendar;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import ch.epfl.ivrl.photopicker.R;
 import ch.epfl.ivrl.photopicker.dateSelect.DateChangedListener;
 import ch.epfl.ivrl.photopicker.dateSelect.DatePickerFragment;
+import ch.epfl.ivrl.photopicker.imageData.Photograph;
+import ch.epfl.ivrl.photopicker.imageData.Vacation;
+import ch.epfl.ivrl.photopicker.imageGrouping.ImageClusteringTask;
+import ch.epfl.ivrl.photopicker.imageGrouping.ImageClusteringTechnique;
+import ch.epfl.ivrl.photopicker.imageGrouping.ImageDBSCAN;
+import ch.epfl.ivrl.photopicker.imageGrouping.TimeDistance;
+import ch.epfl.ivrl.photopicker.imageMisc.ImageDateFilter;
 import ch.epfl.ivrl.photopicker.permissionManagement.PermissionGranter;
 import ch.epfl.ivrl.photopicker.view.CoverFlow;
 
@@ -183,10 +192,45 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void goToPhotoSelection(View v) {
-        Intent slidePhotoIntent = new Intent();
-        slidePhotoIntent.putExtra("start-date", mStartDate);
-        slidePhotoIntent.putExtra("end-date", mEndDate);
-        slidePhotoIntent.setClass(MainActivity.this, Tinder.class);
-        startActivity(slidePhotoIntent);
+        // retrieve photos and cluster them
+        List<Photograph> filteredImages = getImagesAccordingToDates();
+
+        ImageClusteringTask ict = new ImageClusteringTask(
+                MainActivity.this,
+                new TimeDistance(),
+                new ImageDBSCAN(0.1f, 2));
+        try {
+            Vacation vacation = ict.execute(filteredImages).get();
+            Intent slidePhotoIntent = new Intent();
+            slidePhotoIntent.putExtra("vacation", vacation);
+            slidePhotoIntent.setClass(MainActivity.this, Tinder.class);
+            startActivity(slidePhotoIntent);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
+     * Uses this Activity's intent to retrieve the start- and end-date, and then filters all the
+     * pictures from the camera to get only the ones within the time frame.
+     * @return A list of all the Photographs matching the dates passed to this activity.
+     */
+    private List<Photograph> getImagesAccordingToDates() {
+        // adjust dates if needed
+        if (mStartDate == null) {
+            mStartDate = Calendar.getInstance();
+            mStartDate.set(Calendar.YEAR, 0);
+            mStartDate.set(Calendar.HOUR_OF_DAY, 0);
+        }
+        if (mEndDate == null) {
+            mEndDate = Calendar.getInstance();
+            mEndDate.set(Calendar.HOUR_OF_DAY, 23);
+            mEndDate.set(Calendar.MINUTE, 59);
+        }
+
+        // get all pictures from the camera and filter them
+        List<String> paths = ImageDateFilter.getCameraImages(this);
+        return ImageDateFilter.getFilesWithinDates(MainActivity.this, paths, mStartDate, mEndDate);
     }
 }
