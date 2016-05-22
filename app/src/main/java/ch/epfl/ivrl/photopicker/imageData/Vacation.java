@@ -1,5 +1,9 @@
 package ch.epfl.ivrl.photopicker.imageData;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +12,7 @@ import java.util.List;
  *
  * This class holds a list of Scenes and represents the topmost structure for classifying photographs.
  */
-public class Vacation {
+public class Vacation implements Serializable {
     private List<Scene> mScenes;
 
     public Vacation() {
@@ -17,6 +21,18 @@ public class Vacation {
 
     public void addScene(Scene scene) {
         mScenes.add(scene);
+    }
+
+    public Scene getScene(int position) {
+        return mScenes.get(position);
+    }
+
+    public boolean removeScene(Scene s) {
+        return mScenes.remove(s);
+    }
+
+    public int getCount() {
+        return mScenes.size();
     }
 
     public String toString() {

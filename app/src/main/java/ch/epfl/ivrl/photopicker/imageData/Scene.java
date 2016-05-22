@@ -1,5 +1,6 @@
 package ch.epfl.ivrl.photopicker.imageData;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * This class represents a group of photos showing the same point of view.
  * Multiple scenes constitute a Vacation.
  */
-public class Scene {
+public class Scene implements Serializable {
 
     private List<Photograph> mPhotographs;
 
@@ -19,6 +20,10 @@ public class Scene {
 
     public void addPhoto(Photograph photo) {
         mPhotographs.add(photo);
+    }
+
+    public List<Photograph> getPhotographs() {
+        return mPhotographs;
     }
 
     public String toString() {

@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import java.io.File;
+import java.io.Serializable;
 
 import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
 
@@ -12,7 +13,7 @@ import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
  *
  * Encapsulates all information representing a picture
  */
-public class Photograph {
+public class Photograph implements Serializable {
 
     private File mFile;
     private int mScalingFactor = -1;
