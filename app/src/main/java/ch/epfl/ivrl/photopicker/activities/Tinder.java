@@ -3,27 +3,21 @@ package ch.epfl.ivrl.photopicker.activities;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.LinearGradient;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Shader;
-import android.graphics.drawable.BitmapDrawable;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.MotionEventCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
-import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -31,40 +25,74 @@ import ch.epfl.ivrl.photopicker.R;
 import ch.epfl.ivrl.photopicker.imageData.Photograph;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageAsyncDisplay;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageDateFilter;
-import ch.epfl.ivrl.photopicker.view.CoverFlow;
-import ch.epfl.ivrl.photopicker.view.TinderView;
+import ch.epfl.ivrl.photopicker.view.OnSwipeListener;
+import ch.epfl.ivrl.photopicker.view.SwipingLinerLayout;
 import ch.epfl.ivrl.photopicker.view.VerticalCarouselView;
 
-public class Tinder extends AppCompatActivity {
+public class Tinder extends AppCompatActivity implements OnSwipeListener {
 
     private ProgressDialog mProgressDialog;
+
+    private VerticalCarouselView mPhotoListView;
+    private GridView mKeptGrid;
+    private GridView mDiscardedGrid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mProgressDialog = createAndSetProgressDialog(Tinder.this);
-
         setContentView(R.layout.activity_tinder);
 
+        // Listen to swipe gestures on top view
+        ((SwipingLinerLayout) findViewById(R.id.tinderContainer)).setSwipeListener(this);
+
+        // Get the pictures from the intent
         List<Photograph> photos = getImagesAccordingToDates();
 
-        setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.kept), 300);
-        setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.discarded), 300);
-        setCoverFlow(photos, (VerticalCarouselView) findViewById(R.id.current), 500);
+        // Set up the three sub views
+        mKeptGrid = (GridView) findViewById(R.id.kept);
+        mDiscardedGrid = (GridView) findViewById(R.id.discarded);
+        mPhotoListView = (VerticalCarouselView) findViewById(R.id.current);
+        setGridView(mKeptGrid);
+        setGridView(mDiscardedGrid);
+        setCoverFlow(photos, mPhotoListView, 500);
 
         mProgressDialog.dismiss();
     }
 
-    private VerticalCarouselView setCoverFlow(List<Photograph> photos, VerticalCarouselView coverFlow, int height) {
+    @Override
+    public void onSwipe(boolean isSwipeLeft) {
+        ImageAdapter listAdapter = (ImageAdapter) mPhotoListView.getAdapter(); // this is not very nice
+        Photograph treated = listAdapter.pop();
+
+        if (treated == null)
+            throw new IllegalStateException("Should not swipe on empty list");
+
+        ImageAdapter gridAdapter = null;
+        if (isSwipeLeft) {
+            gridAdapter = (ImageAdapter) mDiscardedGrid.getAdapter();
+        } else {
+            gridAdapter = (ImageAdapter) mKeptGrid.getAdapter();
+        }
+
+        gridAdapter.addItem(treated);
+
+        if (listAdapter.getCount() == 0) {
+            Log.d("TinderActivity", "Done sorting this scene!");
+        }
+    }
+
+    private void setGridView(GridView view) {
+        view.setAdapter(new ImageAdapter(Tinder.this, null, -1));
+    }
+
+    private void setCoverFlow(List<Photograph> photos, VerticalCarouselView coverFlow, int height) {
 
         coverFlow.setAdapter(new ImageAdapter(Tinder.this, photos, height));
         coverFlow.setMaxZoom(-120);
         //coverFlow.setSpacing(-25);
-        coverFlow.setSelection(coverFlow.getCount());
+        coverFlow.setSelection(coverFlow.getCount() - 1);
         //coverFlow.setAnimationDuration(1000);
-
-        return coverFlow;
     }
 
     private ProgressDialog createAndSetProgressDialog(Context ctx) {
@@ -114,7 +142,13 @@ public class Tinder extends AppCompatActivity {
 
         public ImageAdapter(Context c, List<Photograph> photos, int rowHeight) {
             mContext = c;
-            mPhotographs = photos;
+
+            if (photos != null) {
+                mPhotographs = photos;
+            } else {
+                mPhotographs = new ArrayList<>();
+            }
+
             mRowHeight = rowHeight;
         }
 
@@ -122,8 +156,33 @@ public class Tinder extends AppCompatActivity {
             return mPhotographs.size();
         }
 
+        public void addItem(Photograph newPicture) {
+            addItem(newPicture, getCount());
+        }
+
+        public void addItem(Photograph newPicture, int position) {
+            if (position < 0 || position > getCount())
+                throw new IllegalArgumentException("Cannot add new picture at position " + position);
+            if (newPicture == null)
+                throw new IllegalArgumentException("Cannot add null picture");
+
+            mPhotographs.add(position, newPicture);
+            notifyDataSetInvalidated();
+        }
+
+        public Photograph pop() {
+            Photograph popped = null;
+
+            if (getCount() > 0) {
+                popped = mPhotographs.remove(mPhotographs.size() - 1);
+                notifyDataSetInvalidated();
+            }
+
+            return popped;
+        }
+
         public Object getItem(int position) {
-            return position;
+            return mPhotographs.get(position);
         }
 
         public long getItemId(int position) {
@@ -140,51 +199,33 @@ public class Tinder extends AppCompatActivity {
                 imageView = new ImageView(mContext);
             }
 
-            /*
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(parent.getWidth(), parent.getHeight());
-            layoutParams.gravity=Gravity.CENTER_HORIZONTAL;
-            layoutParams.weight = 1.0f;
-            layoutParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
-            layoutParams.height = 500000sadf;
-            imageView.setLayoutParams(layoutParams);
-            imageView.requestLayout();
-            */
-
             // set view photo
-            ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(Tinder.this, imageView, false);
-
+            ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(
+                    Tinder.this, imageView, false);
             mPhotographs.get(position).setTargetHeight(parent.getHeight());
             mPhotographs.get(position).setTargetHeight(parent.getWidth());
-
             imageAsyncDisplay.execute(mPhotographs.get(position));
 
 
             // set view height
-            ViewGroup.LayoutParams params = imageView.getLayoutParams();
-            if (params == null) {
-                params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mRowHeight);
+            if (mRowHeight > 0) {
+                ViewGroup.LayoutParams params = imageView.getLayoutParams();
+                if (params == null) {
+                    params = new ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, mRowHeight);
+                } else {
+                    params.height = mRowHeight;
+                }
+                imageView.setLayoutParams(params);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                //imageView.setLayoutParams(new CoverFlow.LayoutParams(130, 130));
             } else {
-                params.height = mRowHeight;
+                imageView.setAdjustViewBounds(true);
+                imageView.setBackgroundColor(Color.WHITE);
+                imageView.setTranslationZ(10.0f);
             }
-            imageView.setLayoutParams(params);
-            imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            //imageView.setLayoutParams(new CoverFlow.LayoutParams(130, 130));
 
-            /*
-            //Make sure we set anti-aliasing otherwise we get jaggies
-            BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-            drawable.setAntiAlias(true);
-            */
             return imageView;
-
-            //return mImages[position];
         }
-        /** Returns the size (0.0f to 1.0f) of the views
-         * depending on the 'offset' to the center. */
-        public float getScale(boolean focused, int offset) {
-        /* Formula: 1 / (2 ^ offset) */
-            return Math.max(0, 1.0f / (float)Math.pow(2, Math.abs(offset)));
-        }
-
     }
 }

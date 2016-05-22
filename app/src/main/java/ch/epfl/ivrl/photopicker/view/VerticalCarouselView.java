@@ -13,6 +13,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Transformation;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ScrollView;
@@ -23,6 +24,8 @@ import ch.epfl.ivrl.photopicker.R;
  * TODO: document your custom view class.
  */
 public class VerticalCarouselView extends ListView {
+
+    private boolean isScrolling = false;
 
     /**
      * Graphics Camera used for transforming the matrix of ImageViews
@@ -52,17 +55,22 @@ public class VerticalCarouselView extends ListView {
 
     public VerticalCarouselView(Context context) {
         super(context);
-        this.setStaticTransformationsEnabled(true);
+        setUpScroll();
     }
 
     public VerticalCarouselView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.setStaticTransformationsEnabled(true);
+        setUpScroll();
     }
 
     public VerticalCarouselView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        setUpScroll();
+    }
+
+    private void setUpScroll() {
         this.setStaticTransformationsEnabled(true);
+        this.setVerticalScrollBarEnabled(false);
     }
 
     @Override
@@ -123,6 +131,14 @@ public class VerticalCarouselView extends ListView {
         return view.getTop() + view.getHeight() / 2;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    protected void layoutChildren() {
+        super.layoutChildren();
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -147,6 +163,11 @@ public class VerticalCarouselView extends ListView {
             }
 
             transformImageBitmap((ImageView) child, t, rotationAngle);
+        }
+
+        // scroll to bottom if we stopped scrolling in the middle of the list
+        if (!isScrolling ) {
+            smoothScrollToPosition(getCount() - 1);
         }
 
         child.invalidate();
@@ -187,11 +208,11 @@ public class VerticalCarouselView extends ListView {
 
         //As the angle of the view gets less, zoom in
         if ( rotation < mMaxRotationAngle ) {
-            float zoomAmount = (float) (mMaxZoom +  (rotation * 1.5));
-            mCamera.translate(0.0f, 0.0f, zoomAmount);
+            float zoomAmount = (float) (mMaxZoom +  (rotation * 5.0f));//1.5));
+            mCamera.translate(60.0f + zoomAmount * 0.75f, 0.0f, zoomAmount);
         }
 
-        mCamera.rotateX(-rotationAngle);
+        //mCamera.rotateX(-rotationAngle);
         mCamera.getMatrix(imageMatrix);
         imageMatrix.preTranslate(-(imageWidth/2), -(imageHeight/2));
         imageMatrix.postTranslate((imageWidth/2), (imageHeight/2));
