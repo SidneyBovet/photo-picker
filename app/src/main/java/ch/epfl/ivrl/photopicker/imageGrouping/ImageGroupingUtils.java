@@ -20,10 +20,9 @@ public class ImageGroupingUtils {
 
         for (int i = 0; i < photos.size(); ++i) {
             for (int j = i+1; j < photos.size(); ++j) {
-                pairwiseDistances.set(i, j, distanceMetric.computeDistance(
-                        photos.get(i),
-                        photos.get(j)
-                ));
+                float distance = distanceMetric.computeDistance(photos.get(i),photos.get(j));
+                pairwiseDistances.set(i, j, distance);
+                pairwiseDistances.set(j, i, distance);
 
                 // don't ask how or why, it just works (maybe)
                 int progress = 100 * 2*j + (1-i)*(2*photos.size() - i) / (photos.size() * (photos.size()-1));

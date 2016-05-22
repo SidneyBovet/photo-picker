@@ -1,7 +1,7 @@
 package ch.epfl.ivrl.photopicker.imageGrouping;
 
 
-import org.ejml.data.Matrix;
+import org.ejml.data.DenseMatrix32F;
 
 import java.util.List;
 
@@ -18,5 +18,5 @@ public interface ImageClusteringTechnique {
      * @param pairwiseDistanceMatrix the matrix giving how far a is from b, a from c, b from c, etc.
      * @return A Vacation consisting of different scenes, all having at least one photograph
      */
-    Vacation clusterPhotographs(List<Photograph> photos, Matrix pairwiseDistanceMatrix);
+    Vacation clusterPhotographs(List<Photograph> photos, DenseMatrix32F pairwiseDistanceMatrix);
 }
