@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity
         ImageClusteringTask ict = new ImageClusteringTask(
                 MainActivity.this,
                 new TimeDistance(),
-                new ImageDBSCAN(0.1f, 2));
+                new ImageDBSCAN(5000f, 2));
         try {
             Vacation vacation = ict.execute(filteredImages).get();
             Intent slidePhotoIntent = new Intent();

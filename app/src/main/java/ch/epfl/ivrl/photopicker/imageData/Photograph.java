@@ -16,7 +16,6 @@ import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
 public class Photograph implements Serializable {
 
     private File mFile;
-    private int mScalingFactor = -1;
     private int mTargetHeight = -1;
     private int mTargetWidth = -1;
 
@@ -28,8 +27,6 @@ public class Photograph implements Serializable {
         mFile = file;
         mTargetHeight = targetHeight;
         mTargetWidth = targetWidth;
-
-        mScalingFactor = ImageUtils.getOptionsFromPath(file.getAbsolutePath(), targetWidth, targetHeight).inSampleSize;
     }
 
     public String getPath() {
@@ -45,7 +42,7 @@ public class Photograph implements Serializable {
     }
 
     public int getScalingFactor() {
-        return mScalingFactor;
+        return ImageUtils.getOptionsFromPath(mFile.getAbsolutePath(), mTargetWidth, mTargetHeight).inSampleSize;
     }
 
     public int getTargetHeight() {
@@ -66,7 +63,7 @@ public class Photograph implements Serializable {
 
     public Bitmap getScaledBitmap() {
         final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = mScalingFactor;
+        options.inSampleSize = ImageUtils.getOptionsFromPath(mFile.getAbsolutePath(), mTargetWidth, mTargetHeight).inSampleSize;;
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(mFile.getAbsolutePath(), options);
     }
@@ -80,16 +77,10 @@ public class Photograph implements Serializable {
 
 
     public boolean equals(Photograph other) {
-        if(!other.getPath().equals(this.getPath()))
-            return false;
-
-        if(other.getScalingFactor() != mScalingFactor)
-            return false;
-
-        return true;
+        return other.getPath().equals(this.getPath());
     }
 
     public String toString() {
-        return "Photo: '" + mFile.getName() + "' : s=" + mScalingFactor;
+        return "Photo: '" + mFile.getName() + "'\n";
     }
 }

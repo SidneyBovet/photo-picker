@@ -20,6 +20,10 @@ public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
 
     private final WeakReference<ImageView> mImageViewReference;
 
+    public ImageAsyncDisplay(ImageView imageView) {
+        this(null, imageView, false);
+    }
+
     public ImageAsyncDisplay(Context ctx, ImageView imageView) {
         this(ctx, imageView, true);
     }
@@ -27,7 +31,7 @@ public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
     public ImageAsyncDisplay(Context ctx, ImageView imageView, boolean displayProgress) {
         // Use a WeakReference to ensure the ImageView can be garbage collected
         mImageViewReference = new WeakReference<ImageView>(imageView);
-        if (displayProgress) {
+        if (displayProgress && ctx != null) {
             mProgressDialog = new ProgressDialog(ctx);
         }
     }

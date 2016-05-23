@@ -35,7 +35,7 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        mProgressDialog.setMessage("Loading photos...");
+        mProgressDialog.setMessage("Grouping your pictures...");
         mProgressDialog.setIndeterminate(false);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mProgressDialog.setCancelable(false);

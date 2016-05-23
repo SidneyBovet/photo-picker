@@ -34,6 +34,6 @@ public class Scene implements Serializable {
             ret += "\n";
         }
 
-        return ret.substring(0, ret.lastIndexOf('\n'));
+        return ret;
     }
 }
