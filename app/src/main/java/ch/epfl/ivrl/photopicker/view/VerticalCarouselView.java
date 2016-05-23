@@ -23,7 +23,7 @@ import ch.epfl.ivrl.photopicker.R;
 /**
  * TODO: document your custom view class.
  */
-public class VerticalCarouselView extends ListView {
+public class VerticalCarouselView extends ListView implements AbsListView.OnScrollListener {
 
     private boolean isScrolling = false;
 
@@ -71,6 +71,28 @@ public class VerticalCarouselView extends ListView {
     private void setUpScroll() {
         this.setStaticTransformationsEnabled(true);
         this.setVerticalScrollBarEnabled(false);
+        this.setOnScrollListener(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Sets whether this view is scrolling.
+     */
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        if (scrollState == SCROLL_STATE_TOUCH_SCROLL) {
+            isScrolling = true;
+        } else {
+            isScrolling = false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
     }
 
     @Override
