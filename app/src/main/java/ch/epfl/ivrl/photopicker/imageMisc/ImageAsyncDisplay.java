@@ -56,7 +56,13 @@ public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
 
         Photograph p = params[0];
 
-        return ImageUtils.decodeSampledBitmapFromPath(p.getPath(), p.getTargetWidth(), p.getTargetHeight());
+        Bitmap returned = null;
+
+        if (p != null) {
+            ImageUtils.decodeSampledBitmapFromPath(p.getPath(), p.getTargetWidth(), p.getTargetHeight());
+        }
+
+        return returned;
     }
 
     // Once complete, see if ImageView is still around and set bitmap.
@@ -74,5 +80,4 @@ public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
             }
         }
     }
-
 }
