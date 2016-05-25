@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
@@ -30,7 +31,7 @@ public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
 
     public ImageAsyncDisplay(Context ctx, ImageView imageView, boolean displayProgress) {
         // Use a WeakReference to ensure the ImageView can be garbage collected
-        mImageViewReference = new WeakReference<ImageView>(imageView);
+        mImageViewReference = new WeakReference<>(imageView);
         if (displayProgress && ctx != null) {
             mProgressDialog = new ProgressDialog(ctx);
         }
@@ -59,7 +60,7 @@ public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
         Bitmap returned = null;
 
         if (p != null) {
-            ImageUtils.decodeSampledBitmapFromPath(p.getPath(), p.getTargetWidth(), p.getTargetHeight());
+            returned = ImageUtils.decodeSampledBitmapFromPath(p.getPath(), p.getTargetWidth(), p.getTargetHeight());
         }
 
         return returned;
