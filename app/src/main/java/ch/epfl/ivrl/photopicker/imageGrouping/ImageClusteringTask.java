@@ -35,6 +35,7 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        Log.d("AsyncTask", "dialog shown");
         mProgressDialog.setMessage("Grouping your pictures...");
         mProgressDialog.setIndeterminate(false);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -67,7 +68,6 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
     protected void onPostExecute(Vacation result) {
         mProgressDialog.dismiss();
 
-        if(result != null)
-            Log.d("AsyncTask", result.toString());
+        Log.d("AsyncTask", "dialog dismissed");
     }
 }

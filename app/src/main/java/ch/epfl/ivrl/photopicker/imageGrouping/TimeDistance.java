@@ -13,9 +13,6 @@ public class TimeDistance implements ImageDistanceMetric {
         long i1 = imageOne.getFile().lastModified();
         long i2 = imageTwo.getFile().lastModified();
 
-        Log.d("Time i1", "" + i1);
-        Log.d("Time i2", "" + i2);
-
         return i2 - i1;
     }
 }

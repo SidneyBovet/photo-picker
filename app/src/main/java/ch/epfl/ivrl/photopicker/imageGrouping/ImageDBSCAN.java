@@ -76,6 +76,7 @@ public class ImageDBSCAN implements ImageClusteringTechnique {
 
         Set<Set<Integer>> clusters = dbscan(pairwiseDistanceMatrix);
 
+        /*
         Log.d("Clustering", pairwiseDistanceMatrix.toString());
         for (Set<Integer> cluster : clusters) {
             Log.d("Clustering", "---------------------------");
@@ -84,6 +85,7 @@ public class ImageDBSCAN implements ImageClusteringTechnique {
             }
             Log.d("Clustering", "---------------------------");
         }
+        */
 
         Vacation vacation = new Vacation();
         for (Set<Integer> cluster : clusters) {
@@ -117,14 +119,12 @@ public class ImageDBSCAN implements ImageClusteringTechnique {
 
         for (DataPoint point : mDataSet) {
             if (!point.visited) {
-                Log.d("DBSCAN","Point " + point.point + " visited.");
                 point.visited = true;
 
                 Set<DataPoint> neighbors = getNeighbors(point.point, matrix);
 
                 Set<Integer> newCluster;
                 if (neighbors.size() < mMinPointCount-1) {
-                    Log.d("DBSCAN","Point " + point.point + " is noise.");
                     // photo is not part of any cluster (aka noise)
                     newCluster = new HashSet<>(1);
                     newCluster.add(point.point);
@@ -153,13 +153,11 @@ public class ImageDBSCAN implements ImageClusteringTechnique {
     private Set<Integer> expandCluster(DataPoint p, Set<DataPoint> neighbors, DenseMatrix32F matrix) {
         Set<Integer> newCluster = new HashSet<>(neighbors.size() + 1);
 
-        Log.d("DBSCAN","Point " + p.point + " clustered.");
         p.clustered = true;
         newCluster.add(p.point);
 
         for (DataPoint pPrime : neighbors) {
             if (!pPrime.visited) {
-                Log.d("DBSCAN","Point " + pPrime.point + " visited.");
                 pPrime.visited = true;
                 Set<DataPoint> neighborsPrime = getNeighbors(pPrime.point, matrix);
                 if (neighborsPrime.size() >= mMinPointCount-1) {
@@ -170,7 +168,6 @@ public class ImageDBSCAN implements ImageClusteringTechnique {
                 }
             }
             if (!pPrime.clustered) {
-                Log.d("DBSCAN","Point " + pPrime.point + " clustered.");
                 pPrime.clustered = true;
                 newCluster.add(pPrime.point);
             }
