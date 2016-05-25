@@ -6,12 +6,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,7 +17,7 @@ import android.widget.ImageView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import ch.epfl.ivrl.photopicker.R;
@@ -29,12 +25,13 @@ import ch.epfl.ivrl.photopicker.imageData.Photograph;
 import ch.epfl.ivrl.photopicker.imageData.Scene;
 import ch.epfl.ivrl.photopicker.imageData.Vacation;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageAsyncDisplay;
-import ch.epfl.ivrl.photopicker.imageMisc.ImageDateFilter;
 import ch.epfl.ivrl.photopicker.view.OnSwipeListener;
 import ch.epfl.ivrl.photopicker.view.SwipingLinerLayout;
 import ch.epfl.ivrl.photopicker.view.VerticalCarouselView;
 
 public class Tinder extends AppCompatActivity implements OnSwipeListener {
+
+    private static int EMPTY_PHOTO_COUNT = 2;
 
     private long mBackPressTime = 0;
 
@@ -266,7 +263,7 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
 
     private void setCoverFlow(List<Photograph> photos, VerticalCarouselView coverFlow, int height) {
 
-        coverFlow.setAdapter(new ImageAdapter(Tinder.this, photos, height));
+        coverFlow.setAdapter(new ImageAdapter(Tinder.this, photos, height, EMPTY_PHOTO_COUNT));
         coverFlow.setMaxZoom(-120);
         //coverFlow.setSpacing(-25);
         coverFlow.setSelection(coverFlow.getCount() - 1);
@@ -288,9 +285,15 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
         private Context mContext;
 
         private List<Photograph> mPhotographs;
+        private int mEmptyCount; // number of blank photographs at the end of this list
+
         private int mRowHeight;
 
         public ImageAdapter(Context c, List<Photograph> photos, int rowHeight) {
+            this(c, photos, rowHeight, 0);
+        }
+
+        public ImageAdapter(Context c, List<Photograph> photos, int rowHeight, int emptyStart) {
             mContext = c;
 
             if (photos != null) {
@@ -298,6 +301,14 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
             } else {
                 mPhotographs = new ArrayList<>();
             }
+
+            mEmptyCount = emptyStart;
+            while (emptyStart > 0) {
+                Log.d(this.getClass().getName(), "Adding empty at position "+mPhotographs.size());
+                mPhotographs.add(mPhotographs.size(), null);
+                emptyStart--;
+            }
+            Collections.reverse(mPhotographs);
 
             mRowHeight = rowHeight;
         }
@@ -321,9 +332,10 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
         }
 
         public Photograph pop() {
+
             Photograph popped = null;
 
-            if (getCount() > 0) {
+            if (getCount() > mEmptyCount) {
                 popped = mPhotographs.remove(mPhotographs.size() - 1);
                 notifyDataSetChanged();
             }
@@ -357,6 +369,10 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
+            Log.d("ImageAdapter", "getView("+position+",...)");
+            Log.d("ImageAdapter", "photo list size = "+mPhotographs.size());
+            Log.d("ImageAdapter", "empty end count = "+ mEmptyCount);
+
             ImageView imageView;
 
             // try to reuse given view, create a new one if needed
@@ -366,12 +382,17 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
                 imageView = new ImageView(mContext);
             }
 
-            // set view photo
-            ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(
-                    Tinder.this, imageView, false);
-            mPhotographs.get(position).setTargetHeight(parent.getHeight());
-            mPhotographs.get(position).setTargetHeight(parent.getWidth());
-            imageAsyncDisplay.execute(mPhotographs.get(position));
+            // set view photo if any
+            if (position < mEmptyCount) {
+                imageView.setImageResource(R.drawable.common_ic_googleplayservices);
+            } else {
+                Log.d("ImageAdapter", "launching async task on photo " + mPhotographs.get(position).toString());
+                ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(
+                        Tinder.this, imageView, false);
+                mPhotographs.get(position).setTargetHeight(parent.getHeight());
+                mPhotographs.get(position).setTargetHeight(parent.getWidth());
+                imageAsyncDisplay.execute(mPhotographs.get(position));
+            }
 
 
             // set view height
@@ -385,7 +406,6 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
                 }
                 imageView.setLayoutParams(params);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                //imageView.setLayoutParams(new CoverFlow.LayoutParams(130, 130));
             } else {
                 imageView.setAdjustViewBounds(true);
                 imageView.setBackgroundColor(Color.WHITE);
