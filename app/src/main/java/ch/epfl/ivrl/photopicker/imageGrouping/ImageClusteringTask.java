@@ -38,7 +38,7 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
         Log.d("AsyncTask", "dialog shown");
         mProgressDialog.setMessage("Grouping your pictures...");
         mProgressDialog.setIndeterminate(false);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // HORIZONTAL?
         mProgressDialog.setCancelable(false);
         mProgressDialog.show();
     }
@@ -48,7 +48,7 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
         if (filteredPhotos.length != 1)
             throw new IllegalArgumentException("I must be given exactly one list of photos.");
 
-        DenseMatrix32F pairwiseDistances = ImageGroupingUtils.getDistanceMatrix(filteredPhotos[0], mDistanceMetric, this);
+        DenseMatrix32F pairwiseDistances = ImageGroupingUtils.getDistanceMatrix(filteredPhotos[0], mDistanceMetric, mProgressDialog);
 
         Vacation collection = mClusteringTechnique.clusterPhotographs(filteredPhotos[0], pairwiseDistances);
 
@@ -61,7 +61,7 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
 
     @Override
     protected void onProgressUpdate(Integer... progress) {
-        mProgressDialog.setProgress(progress[0]);
+        mProgressDialog.setProgress(progress[0] * 100);
     }
 
     @Override
