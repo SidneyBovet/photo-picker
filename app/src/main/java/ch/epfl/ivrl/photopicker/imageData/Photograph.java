@@ -81,6 +81,6 @@ public class Photograph implements Serializable {
     }
 
     public String toString() {
-        return "Photo: '" + mFile.getName() + "'\n";
+        return mFile.getName() + " ";
     }
 }

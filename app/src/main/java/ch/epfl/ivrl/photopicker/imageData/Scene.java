@@ -27,12 +27,13 @@ public class Scene implements Serializable {
     }
 
     public String toString() {
-        String ret = "Scene:\n";
+        String ret = "Scene ";
 
         for (Photograph p: mPhotographs) {
-            ret += "\t" + p.toString();
-            ret += "\n";
+            ret += p.toString();
         }
+
+        ret += "enecS ";
 
         return ret;
     }

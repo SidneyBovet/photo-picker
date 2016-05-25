@@ -36,13 +36,13 @@ public class Vacation implements Serializable {
     }
 
     public String toString() {
-        String ret = "=== Vacation ===\n";
+        String ret = "Vacation ";
 
         for (Scene s: mScenes) {
             ret += s.toString();
         }
 
-        ret += "=== ======== ===\n";
+        ret += "noitacaV ";
         return ret;
     }
 }
