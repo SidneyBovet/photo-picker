@@ -75,6 +75,9 @@ public class Photograph implements Serializable, Comparable {
         return BitmapFactory.decodeFile(mFile.getAbsolutePath(), options);
     }
 
+    public long getTime() {
+        return mFile.lastModified();
+    }
 
     public boolean equals(Photograph other) {
         return other.getPath().equals(this.getPath());
@@ -96,10 +99,7 @@ public class Photograph implements Serializable, Comparable {
         }
 
         Photograph other = (Photograph) another;
-        long otherModifiedTime = other.getFile().lastModified();
-        long thisModifiedTime = this.getFile().lastModified();
-
         // unchecked overflow, should never happen due to subtraction
-        return (int)(thisModifiedTime - otherModifiedTime);
+        return (int)(this.getTime() - other.getTime());
     }
 }

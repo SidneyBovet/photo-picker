@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity
         PermissionGranter.askForPermission(this);
 
         goToPhotoSelection(null); //TODO: remove this
+        //openTutorialActivity();
     }
 
     @Override
@@ -95,7 +96,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_tutorial) {
+            openTutorialActivity();
             return true;
         }
 
@@ -198,7 +200,7 @@ public class MainActivity extends AppCompatActivity
         ImageClusteringTask ict = new ImageClusteringTask(
                 MainActivity.this,
                 new TimeDistance(),
-                new ImageDBSCAN(5000f, 2));
+                new ImageDBSCAN(10000f, 2)); // under 10s two images are of the same scene
         try {
             Vacation vacation = ict.execute(filteredImages).get();
             Intent slidePhotoIntent = new Intent();
@@ -211,6 +213,13 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
     }
+
+    private void openTutorialActivity() {
+        Intent tutorialIntent = new Intent();
+        tutorialIntent.setClass(MainActivity.this, TutorialActivity.class);
+        startActivity(tutorialIntent);
+    }
+
     /**
      * Uses this Activity's intent to retrieve the start- and end-date, and then filters all the
      * pictures from the camera to get only the ones within the time frame.

@@ -13,6 +13,7 @@ import java.util.Set;
 import ch.epfl.ivrl.photopicker.imageData.Photograph;
 import ch.epfl.ivrl.photopicker.imageData.Scene;
 import ch.epfl.ivrl.photopicker.imageData.Vacation;
+import ch.epfl.ivrl.photopicker.utils.CollectionUtils;
 
 /**
  * Created by Sidney on 5/22/2016.
@@ -87,15 +88,20 @@ public class ImageDBSCAN implements ImageClusteringTechnique {
         }
         */
 
-        Vacation vacation = new Vacation();
+        Set<Scene> scenes = new HashSet<>(clusters.size());
         for (Set<Integer> cluster : clusters) {
-            Scene scene = new Scene();
-            for (Integer p : cluster) {
-                scene.addPhoto(photos.get(p));
+            List<Photograph> scenePhotos = new ArrayList<>(cluster.size());
+            for (Integer photoIndex : cluster) {
+                scenePhotos.add(photos.get(photoIndex));
             }
-            vacation.addScene(scene);
+
+            Scene newScene = new Scene();
+            newScene.addPhotos(CollectionUtils.asSortedList(scenePhotos));
+            scenes.add(newScene);
         }
 
+        Vacation vacation = new Vacation();
+        vacation.addScenes(CollectionUtils.asSortedList(scenes));
 
         return vacation;
     }

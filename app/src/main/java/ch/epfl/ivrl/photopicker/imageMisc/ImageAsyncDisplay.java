@@ -2,6 +2,7 @@ package ch.epfl.ivrl.photopicker.imageMisc;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -22,17 +23,13 @@ public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
     private final WeakReference<ImageView> mImageViewReference;
 
     public ImageAsyncDisplay(ImageView imageView) {
-        this(null, imageView, false);
+        this(null, imageView);
     }
 
     public ImageAsyncDisplay(Context ctx, ImageView imageView) {
-        this(ctx, imageView, true);
-    }
-
-    public ImageAsyncDisplay(Context ctx, ImageView imageView, boolean displayProgress) {
         // Use a WeakReference to ensure the ImageView can be garbage collected
         mImageViewReference = new WeakReference<>(imageView);
-        if (displayProgress && ctx != null) {
+        if (ctx != null) {
             mProgressDialog = new ProgressDialog(ctx);
         }
     }
@@ -69,8 +66,16 @@ public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
     // Once complete, see if ImageView is still around and set bitmap.
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            try {
+                mProgressDialog.dismiss();
+            } catch (IllegalArgumentException e) {
+                // Ignore
+            } catch (final Exception e) {
+                throw e;
+            } finally {
+                mProgressDialog = null;
+            }
         }
 
         if (mImageViewReference != null && bitmap != null) {

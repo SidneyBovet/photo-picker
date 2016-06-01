@@ -33,17 +33,20 @@
             android:layout_width="match_parent"
             android:layout_height="0sp"
             android:layout_weight="1"
-            android:weightSum="2">
+            android:weightSum="2"
+            android:baselineAligned="false">
 
             <GridView
                 android:id="@+id/discarded"
 
-                android:padding="10dp"
+                android:layout_margin="5dp"
+                android:padding="5dp"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
 
                 android:gravity="bottom|start"
+                android:background="@color/colorPrimary"
 
                 android:columnWidth="40dp"
                 android:numColumns="auto_fit"
@@ -55,12 +58,14 @@
             <GridView
                 android:id="@+id/kept"
 
-                android:padding="10dp"
+                android:layout_margin="5dp"
+                android:padding="5dp"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
 
                 android:gravity="bottom|end"
+                android:background="@color/colorKeptBg"
 
                 android:columnWidth="40dp"
                 android:numColumns="auto_fit"

@@ -53,11 +53,18 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".activities.Tinder" />
+        <activity
+            android:name=".activities.Tinder"
+            android:label="@string/title_activity_tinder"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.TabbedPhotoZoom"
             android:label="@string/title_activity_tabbed_photo_zoom"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.TutorialActivity"
+            android:label="@string/title_activity_tutorial"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

@@ -2,6 +2,7 @@ package ch.epfl.ivrl.photopicker.imageMisc;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 /**
  * Created by Sidney on 29.03.2016.
@@ -33,7 +34,6 @@ public class ImageUtils {
 
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
-
         // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;
@@ -51,6 +51,7 @@ public class ImageUtils {
                     || (halfWidth / inSampleSize) > reqWidth) {
                 inSampleSize *= 2;
             }
+            inSampleSize *= 2;
         }
 
         return inSampleSize/2;

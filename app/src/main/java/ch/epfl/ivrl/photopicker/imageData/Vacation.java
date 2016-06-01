@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -21,6 +22,10 @@ public class Vacation implements Serializable {
 
     public void addScene(Scene scene) {
         mScenes.add(scene);
+    }
+
+    public void addScenes(Collection<Scene> scenes) {
+        mScenes.addAll(scenes);
     }
 
     public Scene getScene(int position) {
