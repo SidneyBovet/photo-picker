@@ -13,7 +13,7 @@ import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
  *
  * Encapsulates all information representing a picture
  */
-public class Photograph implements Serializable {
+public class Photograph implements Serializable, Comparable {
 
     private File mFile;
     private int mTargetHeight = -1;
@@ -82,5 +82,24 @@ public class Photograph implements Serializable {
 
     public String toString() {
         return mFile.getName() + " ";
+    }
+
+    @Override
+    /**
+     * {@inheritDoc}
+     *
+     * negative if less than other, 0 if equal, positive if greater than other
+     */
+    public int compareTo(Object another) {
+        if (another.getClass() != this.getClass()) {
+            throw new IllegalArgumentException("Trying to compare two objects of different class types.");
+        }
+
+        Photograph other = (Photograph) another;
+        long otherModifiedTime = other.getFile().lastModified();
+        long thisModifiedTime = this.getFile().lastModified();
+
+        // unchecked overflow, should never happen due to subtraction
+        return (int)(thisModifiedTime - otherModifiedTime);
     }
 }
