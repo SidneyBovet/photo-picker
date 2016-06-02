@@ -2,6 +2,7 @@ package ch.epfl.ivrl.photopicker.imageData;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.Serializable;
@@ -15,7 +16,7 @@ import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
  */
 public class Photograph implements Serializable, Comparable {
 
-    private File mFile;
+    private final File mFile;
     private int mTargetHeight = -1;
     private int mTargetWidth = -1;
 
@@ -41,10 +42,6 @@ public class Photograph implements Serializable, Comparable {
         return mFile.getName();
     }
 
-    public int getScalingFactor() {
-        return ImageUtils.getOptionsFromPath(mFile.getAbsolutePath(), mTargetWidth, mTargetHeight).inSampleSize;
-    }
-
     public int getTargetHeight() {
         return mTargetHeight;
     }
@@ -63,7 +60,7 @@ public class Photograph implements Serializable, Comparable {
 
     public Bitmap getScaledBitmap() {
         final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inSampleSize = ImageUtils.getOptionsFromPath(mFile.getAbsolutePath(), mTargetWidth, mTargetHeight).inSampleSize;;
+        options.inSampleSize = ImageUtils.getOptionsFromPath(mFile.getAbsolutePath(), mTargetWidth, mTargetHeight).inSampleSize;
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(mFile.getAbsolutePath(), options);
     }
@@ -75,6 +72,7 @@ public class Photograph implements Serializable, Comparable {
         return BitmapFactory.decodeFile(mFile.getAbsolutePath(), options);
     }
 
+    // TODO: get time from EXIF data instead of file's last modified time
     public long getTime() {
         return mFile.lastModified();
     }
@@ -93,7 +91,7 @@ public class Photograph implements Serializable, Comparable {
      *
      * negative if less than other, 0 if equal, positive if greater than other
      */
-    public int compareTo(Object another) {
+    public int compareTo(@NonNull Object another) {
         if (another.getClass() != this.getClass()) {
             throw new IllegalArgumentException("Trying to compare two objects of different class types.");
         }

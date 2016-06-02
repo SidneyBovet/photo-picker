@@ -1,12 +1,8 @@
 package ch.epfl.ivrl.photopicker.activities;
 
-import android.app.Activity;
-import android.app.Instrumentation;
-import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -23,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,7 +27,6 @@ import java.util.List;
 import ch.epfl.ivrl.photopicker.R;
 import ch.epfl.ivrl.photopicker.imageData.Photograph;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageAsyncDisplay;
-import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
 import ch.epfl.ivrl.photopicker.utils.ProgressDialogUtils;
 
 public class TabbedPhotoZoom extends AppCompatActivity {
@@ -226,7 +220,7 @@ public class TabbedPhotoZoom extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        private List<Photograph> mPhotographs;
+        private final List<Photograph> mPhotographs;
 
         public SectionsPagerAdapter(FragmentManager fm, List<Photograph> photos) {
             super(fm);

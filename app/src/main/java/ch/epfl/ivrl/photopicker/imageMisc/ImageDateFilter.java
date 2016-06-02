@@ -20,12 +20,15 @@ import ch.epfl.ivrl.photopicker.permissionManagement.PermissionGranter;
 
 /**
  * Created by Sidney on 07.03.2016.
+ *
+ * Provides methods to convert the pictures from the phone's camera to a list of Photographs
+ * which is filtered according to the given dates.
  */
 public class ImageDateFilter {
-    public static final String CAMERA_IMAGE_BUCKET_NAME =
+    private static final String CAMERA_IMAGE_BUCKET_NAME =
             Environment.getExternalStorageDirectory().toString()
                     + "/DCIM/Camera";
-    public static final String CAMERA_IMAGE_BUCKET_ID =
+    private static final String CAMERA_IMAGE_BUCKET_ID =
             getBucketId(CAMERA_IMAGE_BUCKET_NAME);
 
     /**
@@ -51,15 +54,17 @@ public class ImageDateFilter {
                     selection,
                     selectionArgs,
                     null);
-            result = new ArrayList<String>(cursor.getCount());
-            if (cursor.moveToFirst()) {
-                final int dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                do {
-                    final String data = cursor.getString(dataColumn);
-                    result.add(data);
-                } while (cursor.moveToNext());
+            if (cursor != null) {
+                result = new ArrayList<>(cursor.getCount());
+                if (cursor.moveToFirst()) {
+                    final int dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                    do {
+                        final String data = cursor.getString(dataColumn);
+                        result.add(data);
+                    } while (cursor.moveToNext());
+                }
+                cursor.close();
             }
-            cursor.close();
         }
         return result;
     }

@@ -8,10 +8,12 @@ import android.support.v4.content.ContextCompat;
 
 /**
  * Created by Sidney on 07.03.2016.
+ *
+ * Provides methods to check and request permissions.
  */
 public class PermissionGranter {
 
-    final static String fPermission = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private final static String fPermission = Manifest.permission.READ_EXTERNAL_STORAGE;
 
     public static void askForPermission(Activity thisActivity) {
         if (!hasPermission(thisActivity)) {

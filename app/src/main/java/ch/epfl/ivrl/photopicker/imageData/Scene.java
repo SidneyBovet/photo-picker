@@ -1,5 +1,7 @@
 package ch.epfl.ivrl.photopicker.imageData;
 
+import android.support.annotation.NonNull;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,10 +15,10 @@ import java.util.List;
  */
 public class Scene implements Serializable, Comparable {
 
-    private List<Photograph> mPhotographs;
+    private final List<Photograph> mPhotographs;
 
     public Scene() {
-        mPhotographs = new ArrayList<Photograph>(1);
+        mPhotographs = new ArrayList<>(1);
     }
 
     public void addPhoto(Photograph photo) {
@@ -57,7 +59,7 @@ public class Scene implements Serializable, Comparable {
     }
 
     @Override
-    public int compareTo(Object another) {
+    public int compareTo(@NonNull Object another) {
         if (another.getClass() != this.getClass()) {
             throw new IllegalArgumentException("Trying to compare two objects of different class types.");
         }

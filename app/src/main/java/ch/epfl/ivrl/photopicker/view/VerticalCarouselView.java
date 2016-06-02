@@ -1,27 +1,35 @@
 package ch.epfl.ivrl.photopicker.view;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Camera;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Transformation;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ScrollView;
 
-import ch.epfl.ivrl.photopicker.R;
 
 /**
- * TODO: document your custom view class.
+ * Copyright (C) 2010 Neil Davies
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * This code is base on the CoverFlow Gallery widget created
+ * by Neil Davies neild001@gmail.com
+ *
+ * @author Sidney Bovet
  */
 public class VerticalCarouselView extends ListView implements AbsListView.OnScrollListener {
 
@@ -30,16 +38,16 @@ public class VerticalCarouselView extends ListView implements AbsListView.OnScro
     /**
      * Graphics Camera used for transforming the matrix of ImageViews
      */
-    private Camera mCamera = new Camera();
+    private final Camera mCamera = new Camera();
 
     /**
      * The offset from the bottom of the "center" of the carousel
      * 0 means on top, 1 all the way down
      */
-    private float mBottomOffsetFactor = 0.75f;
+    private final static float BOTTOM_OFFSET_FACTOR = 0.75f;
 
     /**
-     * The maximum angle the Child ImageView will be rotated by
+     * This is used as a fake rotation angle in order to zoom out the photos
      */
     private int mMaxRotationAngle = 60;
 
@@ -49,9 +57,9 @@ public class VerticalCarouselView extends ListView implements AbsListView.OnScro
     private int mMaxZoom = -120;
 
     /**
-     * The Centre of the CoverFlow
+     * The Centre of the carousel
      */
-    private int mCoverFlowCenter;
+    private int mCarouselCenter;
 
     public VerticalCarouselView(Context context) {
         super(context);
@@ -81,11 +89,7 @@ public class VerticalCarouselView extends ListView implements AbsListView.OnScro
      */
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
-        if (scrollState == SCROLL_STATE_TOUCH_SCROLL) {
-            isScrolling = true;
-        } else {
-            isScrolling = false;
-        }
+        isScrolling = scrollState == SCROLL_STATE_TOUCH_SCROLL;
     }
 
     /**
@@ -93,27 +97,6 @@ public class VerticalCarouselView extends ListView implements AbsListView.OnScro
      */
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-    }
-
-    /**
-     * Get the max rotational angle of the image
-     * @return the mMaxRotationAngle
-     */
-    public int getMaxRotationAngle() {
-        return mMaxRotationAngle;
-    }
-
-    /**
-     * Set the max rotational angle of each image
-     * @param maxRotationAngle the mMaxRotationAngle to set
-     */
-    public void setMaxRotationAngle(int maxRotationAngle) {
-        mMaxRotationAngle = maxRotationAngle;
     }
 
     /**
@@ -133,16 +116,16 @@ public class VerticalCarouselView extends ListView implements AbsListView.OnScro
     }
 
     /**
-     * Get the Centre of the CoverFlow
-     * @return The centre of this CoverFlow.
+     * Get the Centre of the carousel
+     * @return The centre of this carousel.
      */
     private int getCenterOfCoverFlow() {
-        return (int)((getHeight() - getPaddingBottom()) * mBottomOffsetFactor);
+        return (int)((getHeight() - getPaddingBottom()) * BOTTOM_OFFSET_FACTOR);
         //return (getHeight() - getPaddingTop() - getPaddingBottom()) / 2 + getPaddingTop();
     }
 
     public void recomputeCenterOfCoverFlow() {
-        mCoverFlowCenter = getCenterOfCoverFlow();
+        mCarouselCenter = getCenterOfCoverFlow();
     }
 
     /**
@@ -151,14 +134,6 @@ public class VerticalCarouselView extends ListView implements AbsListView.OnScro
      */
     private static int getCenterOfView(View view) {
         return view.getTop() + view.getHeight() / 2;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    protected void layoutChildren() {
-        super.layoutChildren();
     }
 
     /**
@@ -176,10 +151,10 @@ public class VerticalCarouselView extends ListView implements AbsListView.OnScro
         t.clear();
         t.setTransformationType(Transformation.TYPE_MATRIX);
 
-        if (childCenter == mCoverFlowCenter) {
+        if (childCenter == mCarouselCenter) {
             transformImageBitmap((ImageView) child, t, 0);
         } else {
-            rotationAngle = (int) (((float) (mCoverFlowCenter - childCenter)/ childWidth) *  mMaxRotationAngle);
+            rotationAngle = (int) (((float) (mCarouselCenter - childCenter)/ childWidth) *  mMaxRotationAngle);
             if (Math.abs(rotationAngle) > mMaxRotationAngle) {
                 rotationAngle = (rotationAngle < 0) ? -mMaxRotationAngle : mMaxRotationAngle;
             }
@@ -208,7 +183,7 @@ public class VerticalCarouselView extends ListView implements AbsListView.OnScro
      * @param oldh Old height of this view.
      */
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        mCoverFlowCenter = getCenterOfCoverFlow();
+        mCarouselCenter = getCenterOfCoverFlow();
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
@@ -230,7 +205,7 @@ public class VerticalCarouselView extends ListView implements AbsListView.OnScro
 
         //As the angle of the view gets less, zoom in
         if ( rotation < mMaxRotationAngle ) {
-            float zoomAmount = (float) (mMaxZoom +  (rotation * 5.0f));//1.5));
+            float zoomAmount = (mMaxZoom +  (rotation * 5.0f));//1.5f));
             mCamera.translate(60.0f + zoomAmount * 0.75f, 0.0f, zoomAmount);
         }
 

@@ -2,10 +2,11 @@ package ch.epfl.ivrl.photopicker.imageMisc;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 /**
  * Created by Sidney on 29.03.2016.
+ *
+ * Provides utilities functions for dealing with bitmap images.
  */
 public class ImageUtils {
 

@@ -15,6 +15,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Select the first and last day you were taking photos on."
-        android:textSize="20dp" />
+        android:text="@string/entry_text"
+        android:textSize="20sp" />
 </RelativeLayout>

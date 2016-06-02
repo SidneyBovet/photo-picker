@@ -1,9 +1,6 @@
 package ch.epfl.ivrl.photopicker.imageGrouping;
 
-import android.util.Log;
-
 import org.ejml.data.DenseMatrix32F;
-import org.ejml.data.Matrix;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,6 +14,8 @@ import ch.epfl.ivrl.photopicker.utils.CollectionUtils;
 
 /**
  * Created by Sidney on 5/22/2016.
+ *
+ * Implementation of the density-based clustering algorithm DBSCAN.
  */
 public class ImageDBSCAN implements ImageClusteringTechnique {
 
@@ -49,8 +48,8 @@ public class ImageDBSCAN implements ImageClusteringTechnique {
     ---------------------------------------
      */
 
-    private float mEps; // the minimum distance between two points to be in the same cluster
-    private int mMinPointCount; // the minimum number of points that can form a cluster
+    private final float mEps; // the minimum distance between two points to be in the same cluster
+    private final int mMinPointCount; // the minimum number of points that can form a cluster
     private Set<DataPoint> mDataSet; // the points to be processed
 
     /**
@@ -182,7 +181,7 @@ public class ImageDBSCAN implements ImageClusteringTechnique {
         return newCluster;
     }
 
-    public DataPoint getDataPoint(int point) {
+    private DataPoint getDataPoint(int point) {
         for (DataPoint p : mDataSet) {
             if (p.point == point)
                 return p;

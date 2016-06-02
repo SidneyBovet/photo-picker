@@ -3,7 +3,11 @@ package ch.epfl.ivrl.photopicker.imageGrouping;
 import ch.epfl.ivrl.photopicker.imageData.Photograph;
 
 /**
- * Created by LogitechVR on 21.03.2016.
+ * Created by Sidney on 21.03.2016.
+ *
+ * Classes implementing this interface can then be used by an ImageClusteringTask.
+ *
+ * @see ImageClusteringTask
  */
 public interface ImageDistanceMetric {
     /**

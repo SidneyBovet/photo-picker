@@ -2,14 +2,12 @@ package ch.epfl.ivrl.photopicker.imageMisc;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.support.annotation.Nullable;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
-import java.util.Random;
 
 import ch.epfl.ivrl.photopicker.imageData.Photograph;
 
@@ -28,7 +26,7 @@ public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
         this(null, imageView);
     }
 
-    public ImageAsyncDisplay(Context ctx, ImageView imageView) {
+    public ImageAsyncDisplay(@Nullable Context ctx, ImageView imageView) {
         // Use a WeakReference to ensure the ImageView can be garbage collected
         mImageViewReference = new WeakReference<>(imageView);
         if (ctx != null) {
@@ -73,8 +71,7 @@ public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
                 mProgressDialog.dismiss();
             } catch (IllegalArgumentException e) {
                 // Ignore
-            } catch (final Exception e) {
-                throw e;
+                // I know, it is bad design, but time runs out to fix this cleanly
             } finally {
                 mProgressDialog = null;
             }

@@ -1,7 +1,6 @@
 package ch.epfl.ivrl.photopicker.view;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -9,8 +8,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RemoteViews;
-
-import ch.epfl.ivrl.photopicker.R;
 
 /**
  * Example of writing a custom layout manager.  This is a fairly full-featured
@@ -21,7 +18,7 @@ import ch.epfl.ivrl.photopicker.R;
 public class TinderView extends ViewGroup {
 
     /** The position of the separation between kept+discarded and current photos */
-    private float mSeparationPosition = 0.5f;
+    private final static float SEPARATION_POSITION = 0.5f;
 
     /** The amount of space used by children in the left gutter. */
     private int mLeftWidth;
@@ -131,11 +128,6 @@ public class TinderView extends ViewGroup {
         final int parentTop = getPaddingTop();
         final int parentBottom = bottom - top - getPaddingBottom();
 
-        Log.d("Dimensions","top "+parentTop);
-        Log.d("Dimensions","bot "+parentBottom);
-        Log.d("Dimensions","midLeft "+middleLeft);
-        Log.d("Dimensions","midRight "+middleRight);
-
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
             if (child.getVisibility() != GONE) {
@@ -144,7 +136,7 @@ public class TinderView extends ViewGroup {
                 final int width = child.getMeasuredWidth();
                 final int height = child.getMeasuredHeight();
 
-                mTmpContainerRect.top = Math.round(mSeparationPosition * parentBottom) + parentTop;
+                mTmpContainerRect.top = Math.round(SEPARATION_POSITION * parentBottom) + parentTop;
                 mTmpContainerRect.bottom = parentBottom - lp.bottomMargin;
 
                 // Compute the frame in which we are placing this child.
@@ -160,7 +152,7 @@ public class TinderView extends ViewGroup {
                     mTmpContainerRect.left = middleLeft + lp.leftMargin;
                     mTmpContainerRect.right = middleRight - lp.rightMargin;
                     mTmpContainerRect.top = parentTop + lp.topMargin;
-                    mTmpContainerRect.bottom = Math.round(mSeparationPosition * parentBottom);
+                    mTmpContainerRect.bottom = Math.round(SEPARATION_POSITION * parentBottom);
                 }
 
                 // Use the child's gravity and size to determine its final
@@ -207,13 +199,13 @@ public class TinderView extends ViewGroup {
          * The gravity to apply with the View to which these layout parameters
          * are associated.
          */
-        public int gravity = Gravity.TOP | Gravity.START;
+        public final int gravity = Gravity.TOP | Gravity.START;
 
-        public static int POSITION_MIDDLE = 0;
-        public static int POSITION_LEFT = 1;
-        public static int POSITION_RIGHT = 2;
+        public final static int POSITION_MIDDLE = 0;
+        public final static int POSITION_LEFT = 1;
+        public final static int POSITION_RIGHT = 2;
 
-        public int position = POSITION_MIDDLE;
+        public final int position = POSITION_MIDDLE;
 
         public LayoutParams(Context c, AttributeSet attrs) {
             super(c, attrs);

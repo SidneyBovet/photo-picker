@@ -12,16 +12,14 @@ import java.util.GregorianCalendar;
 
 /**
  * Created by Sidney on 07.03.2016.
+ *
+ * Shows the date-picking dialog used to select the start and end dates
  */
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
 
     private boolean isStartDate;
-    DateChangedListener dcl;
-
-    public boolean isStartDate() {
-        return isStartDate;
-    }
+    private DateChangedListener dcl;
 
     public void setIsStartDate(boolean isStartDate) {
         this.isStartDate = isStartDate;

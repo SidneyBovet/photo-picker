@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import boofcv.android.ConvertBitmap;
 import boofcv.struct.image.ImageUInt8;
 
@@ -12,7 +15,9 @@ import ch.epfl.ivrl.photopicker.imageData.Photograph;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
 
 /**
- * Created by LogitechVR on 21.03.2016.
+ * Created by Sidney on 21.03.2016.
+ *
+ * WARNING: due to lack of time, this class is not fully functional!
  */
 public class RescaleImageDistance implements ImageDistanceMetric {
 
@@ -30,6 +35,8 @@ public class RescaleImageDistance implements ImageDistanceMetric {
     @Override
     public float computeDistance(@NonNull Photograph imageOne, @NonNull Photograph imageTwo) {
 
+        throw new UnsupportedOperationException("Downsampling technique was not fully implemented");
+        /*
         byte[] buffer = null;
 
         MultiSpectral<ImageUInt8> img1 = getResizedBoofFromPath(imageOne.getPath(),
@@ -42,6 +49,7 @@ public class RescaleImageDistance implements ImageDistanceMetric {
         Log.d("Image Distance", img2.toString());
 
         return 0;
+        //*/
     }
 
     private MultiSpectral<ImageUInt8> getResizedBoofFromPath(String path, int width, int height, byte[] buffer) {

@@ -5,10 +5,10 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.transition.Slide;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,13 +28,11 @@ import ch.epfl.ivrl.photopicker.dateSelect.DatePickerFragment;
 import ch.epfl.ivrl.photopicker.imageData.Photograph;
 import ch.epfl.ivrl.photopicker.imageData.Vacation;
 import ch.epfl.ivrl.photopicker.imageGrouping.ImageClusteringTask;
-import ch.epfl.ivrl.photopicker.imageGrouping.ImageClusteringTechnique;
 import ch.epfl.ivrl.photopicker.imageGrouping.ImageDBSCAN;
 import ch.epfl.ivrl.photopicker.imageGrouping.TimeDistance;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageDateFilter;
 import ch.epfl.ivrl.photopicker.permissionManagement.PermissionGranter;
 import ch.epfl.ivrl.photopicker.utils.ProgressDialogUtils;
-import ch.epfl.ivrl.photopicker.view.CoverFlow;
 
 public class MainActivity extends AppCompatActivity
     implements DateChangedListener {
@@ -55,21 +53,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //        .setAction("Action", null).show();
-                getImageList(view.getContext());
-                Intent slidePhotoIntent = new Intent();
-                slidePhotoIntent.putExtra("uri-list", ImageDateFilter.getCameraImages());
-                slidePhotoIntent.setClass(view.getContext(), SlidePhoto.class);
-                startActivity(slidePhotoIntent);
-            }
-        });*/
-
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -78,8 +61,7 @@ public class MainActivity extends AppCompatActivity
 
         PermissionGranter.askForPermission(this);
 
-        //goToPhotoSelection(null); //TODO: remove this
-        //openTutorialActivity();
+        openTutorialActivity(); // TODO: use persistent state to show tutorial once
     }
 
     @Override
@@ -210,10 +192,9 @@ public class MainActivity extends AppCompatActivity
             slidePhotoIntent.putExtra("vacation", vacation);
             slidePhotoIntent.setClass(MainActivity.this, Tinder.class);
             startActivity(slidePhotoIntent);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Snackbar.make(null, "There was an error, please restart the application..", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         }
     }
 

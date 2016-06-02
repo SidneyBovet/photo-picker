@@ -10,6 +10,10 @@ import ch.epfl.ivrl.photopicker.imageData.Vacation;
 
 /**
  * Created by Sidney on 31.03.2016.
+ *
+ * Classes implementing this interface can then be used by an ImageClusteringTask.
+ *
+ * @see ImageClusteringTask
  */
 public interface ImageClusteringTechnique {
     /**

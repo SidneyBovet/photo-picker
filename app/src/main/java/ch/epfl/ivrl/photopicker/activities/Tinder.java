@@ -1,17 +1,14 @@
 package ch.epfl.ivrl.photopicker.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 
@@ -32,11 +29,10 @@ import ch.epfl.ivrl.photopicker.view.VerticalCarouselView;
 
 public class Tinder extends AppCompatActivity implements OnSwipeListener {
 
-    private static int ROW_HEIGHT = 550;
-    private static int EMPTY_PHOTO_COUNT = 1;
+    private static final int ROW_HEIGHT = 550;
+    private static final int EMPTY_PHOTO_COUNT = 1;
 
     private long mBackPressTime = 0;
-    private boolean isActivityDone = false;
 
     private VerticalCarouselView mPhotoListView;
     private GridView mKeptGrid;
@@ -102,7 +98,6 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
         gridAdapter.addItem(treated);
 
         if (listAdapter.isEmpty()) {
-            isActivityDone = true;
             if (mVacation.getCount() == 1)
                 startEndActivity();
             else
@@ -274,10 +269,10 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
 
     public class ImageAdapter extends BaseAdapter {
 
-        private List<Photograph> mPhotographs;
-        private int mEmptyCount; // number of blank photographs at the end of this list
+        private final List<Photograph> mPhotographs;
+        private final int mEmptyCount; // number of blank photographs at the end of this list
 
-        private int mRowHeight;
+        private final int mRowHeight;
 
         public ImageAdapter(List<Photograph> photos, int rowHeight) {
             this(photos, rowHeight, 0);

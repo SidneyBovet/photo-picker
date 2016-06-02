@@ -1,6 +1,5 @@
 package ch.epfl.ivrl.photopicker.activities;
 
-import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,7 +11,6 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,25 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.epfl.ivrl.photopicker.R;
-import ch.epfl.ivrl.photopicker.imageData.Photograph;
-import ch.epfl.ivrl.photopicker.imageMisc.ImageAsyncDisplay;
 
 public class TutorialActivity extends AppCompatActivity {
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,14 +37,22 @@ public class TutorialActivity extends AppCompatActivity {
         final List<String> descriptions = new ArrayList<>(3);
         setResources(paths, descriptions);
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), paths, descriptions);
+        /*
+      The {@link android.support.v4.view.PagerAdapter} that will provide
+      fragments for each of the sections. We use a
+      {@link FragmentPagerAdapter} derivative, which will keep every
+      loaded fragment in memory. If this becomes too memory intensive, it
+      may be best to switch to a
+      {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     */
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), paths, descriptions);
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.container);
+        viewPager.setAdapter(sectionsPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     private void setResources(List<Integer> paths, List<String> descriptions) {
@@ -85,11 +74,6 @@ public class TutorialActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_tutorial, menu);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -135,8 +119,8 @@ public class TutorialActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        private List<Integer> mResources;
-        private List<String> mSectionDescription;
+        private final List<Integer> mResources;
+        private final List<String> mSectionDescription;
 
         public SectionsPagerAdapter(FragmentManager fm, List<Integer> filePaths, List<String> descriptions) {
             super(fm);

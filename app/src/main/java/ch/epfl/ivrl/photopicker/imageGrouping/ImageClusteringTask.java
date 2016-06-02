@@ -3,6 +3,7 @@ package ch.epfl.ivrl.photopicker.imageGrouping;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.ejml.data.DenseMatrix32F;
@@ -13,15 +14,17 @@ import ch.epfl.ivrl.photopicker.imageData.Photograph;
 import ch.epfl.ivrl.photopicker.imageData.Vacation;
 
 /**
- * Created by LogitechVR on 05.04.2016.
+ * Created by Sidney on 05.04.2016.
+ *
+ * Uses threading to cluster Photographs according to a ImageDistanceMetric and a ImageClusteringTechnique.
  */
 public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, Vacation> {
 
     private ProgressDialog mProgressDialog;
-    private ImageDistanceMetric mDistanceMetric;
-    private ImageClusteringTechnique mClusteringTechnique;
+    private final ImageDistanceMetric mDistanceMetric;
+    private final ImageClusteringTechnique mClusteringTechnique;
 
-    public ImageClusteringTask(Context ctx,
+    public ImageClusteringTask(@Nullable Context ctx,
             ImageDistanceMetric distanceMetric,
             ImageClusteringTechnique clusteringTechnique) {
 
@@ -35,7 +38,6 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        Log.d("AsyncTask", "dialog shown");
         if (mProgressDialog != null) {
             mProgressDialog.setMessage("Grouping your pictures...");
             mProgressDialog.setIndeterminate(false);
@@ -50,11 +52,9 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
         if (filteredPhotos.length != 1)
             throw new IllegalArgumentException("I must be given exactly one list of photos.");
 
-        DenseMatrix32F pairwiseDistances = ImageGroupingUtils.getDistanceMatrix(filteredPhotos[0], mDistanceMetric, mProgressDialog);
+        DenseMatrix32F pairwiseDistances = ImageGroupingUtils.getDistanceMatrix(filteredPhotos[0], mDistanceMetric);
 
-        Vacation collection = mClusteringTechnique.clusterPhotographs(filteredPhotos[0], pairwiseDistances);
-
-        return collection;
+        return mClusteringTechnique.clusterPhotographs(filteredPhotos[0], pairwiseDistances);
     }
 
     public void makeProgress(int progress) {
@@ -71,7 +71,5 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
-
-        Log.d("AsyncTask", "dialog dismissed");
     }
 }
