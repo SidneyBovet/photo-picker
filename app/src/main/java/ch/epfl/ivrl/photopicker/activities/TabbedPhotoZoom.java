@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -32,6 +33,7 @@ import ch.epfl.ivrl.photopicker.R;
 import ch.epfl.ivrl.photopicker.imageData.Photograph;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageAsyncDisplay;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageUtils;
+import ch.epfl.ivrl.photopicker.utils.ProgressDialogUtils;
 
 public class TabbedPhotoZoom extends AppCompatActivity {
 
@@ -58,6 +60,9 @@ public class TabbedPhotoZoom extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ProgressDialogUtils.showProgressFor(TabbedPhotoZoom.this, 700, "Loading...");
+
         setContentView(R.layout.activity_tabbed_photo_zoom);
         setTitle(getTitleFromIntent());
 
@@ -207,7 +212,7 @@ public class TabbedPhotoZoom extends AppCompatActivity {
                 photograph.setTargetWidth(container.getMeasuredWidth());
 
                 ImageView imageView = (ImageView) rootView.findViewById(R.id.section_image);
-                ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(getContext(), imageView); // TODO: check that this context is valid
+                ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(null, imageView);
                 imageAsyncDisplay.execute(photograph);
             }
 

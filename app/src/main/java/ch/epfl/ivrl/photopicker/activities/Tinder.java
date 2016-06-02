@@ -1,5 +1,6 @@
 package ch.epfl.ivrl.photopicker.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 
@@ -23,13 +25,15 @@ import ch.epfl.ivrl.photopicker.imageData.Photograph;
 import ch.epfl.ivrl.photopicker.imageData.Scene;
 import ch.epfl.ivrl.photopicker.imageData.Vacation;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageAsyncDisplay;
+import ch.epfl.ivrl.photopicker.utils.ProgressDialogUtils;
 import ch.epfl.ivrl.photopicker.view.OnSwipeListener;
 import ch.epfl.ivrl.photopicker.view.SwipingLinerLayout;
 import ch.epfl.ivrl.photopicker.view.VerticalCarouselView;
 
 public class Tinder extends AppCompatActivity implements OnSwipeListener {
 
-    private static int EMPTY_PHOTO_COUNT = 2;
+    private static int ROW_HEIGHT = 550;
+    private static int EMPTY_PHOTO_COUNT = 1;
 
     private long mBackPressTime = 0;
     private boolean isActivityDone = false;
@@ -43,8 +47,9 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("TinderActivity", "onCreate");
         super.onCreate(savedInstanceState);
+
+        ProgressDialogUtils.showProgressFor(Tinder.this, 500, "Loading pictures...");
 
         onCreateWork();
     }
@@ -57,9 +62,7 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
 
         // Get the pictures from the intent
         mVacation = getVacationFromIntent();
-        Log.d("TinderActivity", mVacation.toString());
         mScene = mVacation.getScene(mVacation.getCount() - 1);
-        Log.d("TinderActivity", mScene.toString());
         List<Photograph> photos = mScene.getPhotographs();
 
         // Set up the three sub views
@@ -68,14 +71,12 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
         mPhotoListView = (VerticalCarouselView) findViewById(R.id.current);
         setGridView(mKeptGrid);
         setGridView(mDiscardedGrid);
-        setCoverFlow(photos, mPhotoListView, 500);
+        setCoverFlow(photos, mPhotoListView);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        Log.d("TinderActivity", "Result code = " + resultCode);
 
         if (resultCode == TabbedPhotoZoom.RESULT_MODIFIED) {
             List<Photograph> placedBack = (List<Photograph>) data.getSerializableExtra("to-be-retreated");
@@ -91,22 +92,16 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
         if (treated == null)
             throw new IllegalStateException("Should not swipe on empty list");
 
-        String toastText;
         ImageAdapter gridAdapter;
         if (isSwipeLeft) {
             gridAdapter = (ImageAdapter) mDiscardedGrid.getAdapter();
-            toastText = "Discarding this photo";
         } else {
             gridAdapter = (ImageAdapter) mKeptGrid.getAdapter();
-            toastText = "Keeping this photo";
         }
-        Snackbar.make(findViewById(R.id.tinderContainer),toastText , Snackbar.LENGTH_SHORT)
-                .setAction("Action", null).show();
 
         gridAdapter.addItem(treated);
 
         if (listAdapter.isEmpty()) {
-            Log.d("TinderActivity", "Done sorting this scene!");
             isActivityDone = true;
             if (mVacation.getCount() == 1)
                 startEndActivity();
@@ -133,6 +128,7 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
             intent.setClass(Tinder.this, MainActivity.class);
             startActivity(intent);
             finish();
+            overridePendingTransition(0, 0);
         }
     }
 
@@ -158,8 +154,7 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
      */
     private void removePhotosFromAdapter(List<Photograph> photos, ImageAdapter adapter) {
         for (Photograph p : photos) {
-            if (adapter.removePhoto(p))
-                Log.d("TinderActivity", "Photo " + p.toString() + "removed from adapter");
+            adapter.removePhoto(p);
         }
     }
 
@@ -195,7 +190,6 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
      * Also passes the result of its sorting of the aforementioned scene.
      */
     private void startNewTinderActivity() {
-        Log.d("TinderActivity", "Starting new tinder activity");
         // remove this scene from the vacation
         mVacation.removeScene(mScene);
 
@@ -215,6 +209,7 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
         tinderIntent.setClass(Tinder.this, Tinder.class);
         startActivity(tinderIntent);
         finish();
+        overridePendingTransition(0, 0);
     }
 
     /**
@@ -268,9 +263,9 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
         });
     }
 
-    private void setCoverFlow(List<Photograph> photos, VerticalCarouselView coverFlow, int height) {
+    private void setCoverFlow(List<Photograph> photos, VerticalCarouselView coverFlow) {
 
-        coverFlow.setAdapter(new ImageAdapter(photos, height, EMPTY_PHOTO_COUNT));
+        coverFlow.setAdapter(new ImageAdapter(photos, ROW_HEIGHT, EMPTY_PHOTO_COUNT));
         coverFlow.setMaxZoom(-120);
         //coverFlow.setSpacing(-25);
         coverFlow.setSelection(coverFlow.getCount() - 1);
@@ -298,7 +293,6 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
 
             mEmptyCount = emptyStart;
             while (emptyStart > 0) {
-                Log.d(this.getClass().getName(), "Adding empty at position "+mPhotographs.size());
                 mPhotographs.add(mPhotographs.size(), null);
                 emptyStart--;
             }
@@ -384,18 +378,18 @@ public class Tinder extends AppCompatActivity implements OnSwipeListener {
                 //imageView.setImageResource(R.drawable.common_ic_googleplayservices);
                 imageView.setImageResource(android.R.color.transparent);
             } else {
+                Photograph photograph = mPhotographs.get(position);
+
                 //Log.d("ImageAdapter", "launching async task on photo " + mPhotographs.get(position).toString());
                 ImageAsyncDisplay imageAsyncDisplay = new ImageAsyncDisplay(
-                        Tinder.this, imageView);
+                        null, imageView);
 
                 if (mRowHeight > 0)
-                    mPhotographs.get(position).setTargetHeight(mRowHeight);
+                    photograph.setTargetHeight(mRowHeight);
                 else
-                    mPhotographs.get(position).setTargetHeight(parent.getHeight());
-                mPhotographs.get(position).setTargetWidth(parent.getMeasuredWidth());
-
-                Log.d("ImageAdapter", "Starting asynctask on " + mPhotographs.get(position).getFile().getName());
-                imageAsyncDisplay.execute(mPhotographs.get(position));
+                    photograph.setTargetHeight(parent.getHeight());
+                photograph.setTargetWidth(parent.getMeasuredWidth());
+                imageAsyncDisplay.execute(photograph);
             }
 
 

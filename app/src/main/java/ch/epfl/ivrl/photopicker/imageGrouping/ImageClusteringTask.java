@@ -25,22 +25,24 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
             ImageDistanceMetric distanceMetric,
             ImageClusteringTechnique clusteringTechnique) {
 
-        Log.d("Context check",ctx.toString());
-
-        mProgressDialog = new ProgressDialog(ctx);
         mDistanceMetric = distanceMetric;
         mClusteringTechnique = clusteringTechnique;
+        if (ctx != null) {
+            mProgressDialog = new ProgressDialog(ctx);
+        }
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         Log.d("AsyncTask", "dialog shown");
-        mProgressDialog.setMessage("Grouping your pictures...");
-        mProgressDialog.setIndeterminate(false);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // HORIZONTAL?
-        mProgressDialog.setCancelable(false);
-        mProgressDialog.show();
+        if (mProgressDialog != null) {
+            mProgressDialog.setMessage("Grouping your pictures...");
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+        }
     }
 
     @Override
@@ -66,7 +68,9 @@ public class ImageClusteringTask extends AsyncTask <List<Photograph>, Integer, V
 
     @Override
     protected void onPostExecute(Vacation result) {
-        mProgressDialog.dismiss();
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
 
         Log.d("AsyncTask", "dialog dismissed");
     }

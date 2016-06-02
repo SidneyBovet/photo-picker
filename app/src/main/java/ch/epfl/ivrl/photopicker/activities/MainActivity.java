@@ -33,6 +33,7 @@ import ch.epfl.ivrl.photopicker.imageGrouping.ImageDBSCAN;
 import ch.epfl.ivrl.photopicker.imageGrouping.TimeDistance;
 import ch.epfl.ivrl.photopicker.imageMisc.ImageDateFilter;
 import ch.epfl.ivrl.photopicker.permissionManagement.PermissionGranter;
+import ch.epfl.ivrl.photopicker.utils.ProgressDialogUtils;
 import ch.epfl.ivrl.photopicker.view.CoverFlow;
 
 public class MainActivity extends AppCompatActivity
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity
 
         PermissionGranter.askForPermission(this);
 
-        goToPhotoSelection(null); //TODO: remove this
+        //goToPhotoSelection(null); //TODO: remove this
         //openTutorialActivity();
     }
 
@@ -197,10 +198,12 @@ public class MainActivity extends AppCompatActivity
         // retrieve photos and cluster them
         List<Photograph> filteredImages = getImagesAccordingToDates();
 
+        ProgressDialogUtils.showProgressFor(MainActivity.this, 1000, "Grouping you pictures...");
+
         ImageClusteringTask ict = new ImageClusteringTask(
-                MainActivity.this,
+                null,
                 new TimeDistance(),
-                new ImageDBSCAN(10000f, 2)); // under 10s two images are of the same scene
+                new ImageDBSCAN(20000f, 2)); // under 20s two images are of the same scene
         try {
             Vacation vacation = ict.execute(filteredImages).get();
             Intent slidePhotoIntent = new Intent();

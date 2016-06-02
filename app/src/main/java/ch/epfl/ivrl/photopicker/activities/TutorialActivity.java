@@ -52,8 +52,8 @@ public class TutorialActivity extends AppCompatActivity {
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        List<Integer> paths = new ArrayList<>(3);
-        List<String> descriptions = new ArrayList<>(3);
+        final List<Integer> paths = new ArrayList<>(3);
+        final List<String> descriptions = new ArrayList<>(3);
         setResources(paths, descriptions);
 
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), paths, descriptions);
@@ -68,14 +68,16 @@ public class TutorialActivity extends AppCompatActivity {
 
     private void setResources(List<Integer> paths, List<String> descriptions) {
         paths.add(R.drawable.entry);
-        paths.add(R.drawable.base);
+        paths.add(R.drawable.groups);
+        paths.add(R.drawable.swipe);
         paths.add(R.drawable.swiped);
         paths.add(R.drawable.zoom);
 
-        descriptions.add("Entry");
-        descriptions.add("Base");
-        descriptions.add("Swiped");
+        descriptions.add("Start");
+        descriptions.add("Scene");
+        descriptions.add("Swipe");
         descriptions.add("Zoom");
+        descriptions.add("Sort again");
     }
 
     @Override

@@ -15,6 +15,8 @@ import ch.epfl.ivrl.photopicker.imageData.Photograph;
 
 /**
  * Created by Sidney on 05.04.2016.
+ *
+ * Asynchronous task for displaying an image into an ImageView.
  */
 public class ImageAsyncDisplay extends AsyncTask<Photograph, Void, Bitmap> {
 
