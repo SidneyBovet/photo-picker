@@ -8,4 +8,6 @@
     <string name="title_activity_tutorial">Tutorial</string>
     <string name="entry_text">Select the first and last day you were taking photos on.</string>
     <string name="picture_alt_text">Picture</string>
+    <string name="kept_text">Kept</string>
+    <string name="discarded_text">Discarded</string>
 </resources>

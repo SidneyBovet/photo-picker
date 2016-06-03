@@ -36,43 +36,78 @@
             android:weightSum="2"
             android:baselineAligned="false">
 
-            <GridView
-                android:id="@+id/discarded"
-
-                android:layout_margin="5dp"
-                android:padding="5dp"
+            <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-
-                android:gravity="bottom|start"
-                android:background="@color/colorPrimary"
-
-                android:columnWidth="40dp"
-                android:numColumns="auto_fit"
-                android:verticalSpacing="10dp"
-                android:horizontalSpacing="10dp"
-                android:stretchMode="columnWidth"
-                />
-
-            <GridView
-                android:id="@+id/kept"
-
                 android:layout_margin="5dp"
-                android:padding="5dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp"
+                    android:background="@color/colorKeptBg"
+
+                    android:text="@string/discarded_text"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorAccent"
+
+                    android:gravity="center_horizontal|bottom"/>
+
+                <GridView
+                    android:id="@+id/discarded"
+
+                    android:padding="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:gravity="bottom|start"
+
+                    android:columnWidth="40dp"
+                    android:numColumns="auto_fit"
+                    android:verticalSpacing="10dp"
+                    android:horizontalSpacing="10dp"
+                    android:stretchMode="columnWidth"
+                    />
+
+            </FrameLayout>
+
+            <FrameLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_margin="5dp"
+                android:layout_weight="1">
 
-                android:gravity="bottom|end"
-                android:background="@color/colorKeptBg"
 
-                android:columnWidth="40dp"
-                android:numColumns="auto_fit"
-                android:verticalSpacing="10dp"
-                android:horizontalSpacing="10dp"
-                android:stretchMode="columnWidth"
-                />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="5dp"
+                    android:background="@color/colorKeptBg"
+
+                    android:text="@string/kept_text"
+                    android:textSize="20sp"
+                    android:textColor="@color/colorPrimaryDark"
+
+                    android:gravity="center_horizontal|bottom"/>
+
+                <GridView
+                    android:id="@+id/kept"
+
+                    android:padding="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:gravity="bottom|end"
+
+                    android:columnWidth="40dp"
+                    android:numColumns="auto_fit"
+                    android:verticalSpacing="10dp"
+                    android:horizontalSpacing="10dp"
+                    android:stretchMode="columnWidth"
+                    />
+
+            </FrameLayout>
         </LinearLayout>
     </ch.epfl.ivrl.photopicker.view.SwipingLinerLayout>
 
